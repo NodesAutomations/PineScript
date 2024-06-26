@@ -1,6 +1,3 @@
-### Modified RS Pane
-
-```
 //@version=5
 indicator("RS Pane")
 length = 123//Look back to last 123 days
@@ -30,4 +27,3 @@ plot( 0, linewidth=2, color=color.maroon, title='Zero Line')
 plot(res, title='RS', linewidth=3, color=resColor)
 //plot 21 day moving average
 plot( sma_res  , color=color.gray, title='MA', linewidth = 1)
-```
