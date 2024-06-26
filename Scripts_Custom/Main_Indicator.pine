@@ -1,35 +1,7 @@
 //@version=5 
-indicator(title="Test", overlay=true,timeframe = "1D")
+indicator(title="Main", overlay=true)
 
-// GetChartHighest() returns the highest value of the given argument
-// for the entire chart. That `dataSeries` argument is optional and
-// defaults to the bar high prices when not set.
-// Note: call this function on every bar for calculation consistency.
-// Also, function's output depends on how many bars TradingView loaded
-// on chart.
-GetChartHighest(dataSeries = high) =>
-    var chartHighest = dataSeries
-    if dataSeries > nz(chartHighest, -1e10)
-        chartHighest := dataSeries
-    chartHighest
-
-
-// GetAllTimeHigh() returns the all-time highest value for the given
-// series.
-// Call this function on every bar for calculation consistency.
-// The function's result depends on how much historical data
-// TradingView has for the instrument and exchange combination.
-GetAllTimeHigh(dataSeries = high) =>
-    highestHTF = request.security(syminfo.tickerid, "D", 
-         GetChartHighest(dataSeries)[1], lookahead=barmerge.lookahead_on)
-    highestChartTF = GetChartHighest(dataSeries)
-    math.max(highestHTF, highestChartTF)
-
-
-// Get and plot the all-time high
-plot(series=GetAllTimeHigh(), color=color.white, linewidth=1,title="All-Time High")
-
-//Plot Moving Averages
+//// Plot Moving Averages
 show_10d = input(true, "10 Day")
 plot(show_10d ? ta.ema(close, 10) : na, color = #ef2a57, title="10 Day")
 
@@ -44,3 +16,88 @@ plot(show_100d ? ta.ema(close, 100 ) : na, color = #3768fd, title="100 Day")
 
 show_200d = input(false, "200 Day" )
 plot(show_200d ? ta.ema(close, 200 ) : na, color = #fde947, title="200 Day")
+
+//// Plot All time High
+
+// GetChartHighest() returns the highest value of the given argument
+// for the entire chart.
+GetChartHighest(dataSeries = high) =>
+    var chartHighest = dataSeries
+    if dataSeries > nz(chartHighest, -1e10)
+        chartHighest := dataSeries
+    chartHighest
+
+// GetAllTimeHigh() returns the all-time highest value for the given series
+GetAllTimeHigh(dataSeries = high) =>
+    highestHTF = request.security(syminfo.tickerid, "D", 
+         GetChartHighest(dataSeries)[1], lookahead=barmerge.lookahead_on)
+    highestChartTF = GetChartHighest(dataSeries)
+    math.max(highestHTF, highestChartTF)
+
+// Get and plot the all-time high
+plot(series=GetAllTimeHigh(), color=color.white, linewidth=1,title="All-Time High")
+
+
+////EMA Calculation
+ema10 = ta.ema(close, 10)
+ema21 = ta.ema(close, 21)
+ema50 = ta.ema(close, 50)
+
+ema10_Percentate=(close-ema10)/ema10
+ema21_Percentate=(close-ema21)/ema21
+ema50_Percentate=(close-ema50)/ema50
+
+GetEmaBGColor(x)=>x>=0?color.green:x>=-0.02?color.orange:color.red
+
+////Ath Calculatoin
+
+float ath=GetAllTimeHigh()[0]
+ath_Percentage=(close-ath)/ath
+GetAthBGColor(x)=>x>=-0.15?color.green:x>=-0.2?color.orange:color.red
+
+////Relative Volume Calculation
+
+Round( _val, _decimals) => 
+    // Rounds _val to _decimals places.
+    _p = math.pow(10,_decimals)
+    math.round(math.abs(_val)*_p)/_p*math.sign(_val)
+
+today_vol = request.security(syminfo.tickerid, "D", volume)
+yday_vol = request.security(syminfo.tickerid, "D", volume[1])
+avg_vol = request.security(syminfo.tickerid, "D", ta.sma(yday_vol, 20))
+rvol_Percentate = (today_vol / avg_vol ) 
+
+GetRvolBGColor(x)=>x>=0.5?color.green:x>=0.2?color.orange:color.red
+
+//// Table Generation
+show_dashboard = input(true, "Dashboard" )
+
+var rowId=0
+var colId=0
+var textColor=color.white
+
+method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
+    table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
+
+if barstate.islast and show_dashboard
+    var dashboard= table.new("top_center",10,2)
+
+    dashboard.Cells(rowId,colId,"EMA 10",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(ema10_Percentate,"0.00%"), GetEmaBGColor(ema10_Percentate))
+    colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"EMA 21",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(ema21_Percentate,"0.00%"), GetEmaBGColor(ema21_Percentate))
+    colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"EMA 50",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(ema50_Percentate,"0.00%"), GetEmaBGColor(ema50_Percentate))
+    colId:=colId+1
+ 
+    dashboard.Cells(rowId,colId,"ATH",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(ath_Percentage,"0.00%"), GetAthBGColor(ath_Percentage))
+    colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"RVol",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(rvol_Percentate,"0.00%"), GetRvolBGColor(rvol_Percentate))
+    colId:=colId+1
