@@ -1,0 +1,27 @@
+//@version=5
+// © ssksubam
+// Relative Volume in Percentage (%) label
+// https://in.tradingview.com/script/UyzdpoXx-Relative-Volume/
+indicator("Relative Volume", overlay = true)
+
+var table rvolDisplay = table.new("top_center", 1, 1, border_width = 1, border_color=color.white)
+
+Round( _val, _decimals) => 
+    // Rounds _val to _decimals places.
+    _p = math.pow(10,_decimals)
+    math.round(math.abs(_val)*_p)/_p*math.sign(_val)
+
+format_text(str) =>
+    str + "\n"
+
+
+today_vol = request.security(syminfo.tickerid, "D", volume)
+yday_vol = request.security(syminfo.tickerid, "D", volume[1])
+avg_vol = request.security(syminfo.tickerid, "D", ta.sma(yday_vol, 20))
+volpct = math.round((today_vol / avg_vol ) * 100) 
+
+color_vol = (volpct <= 20) ? color.new(color.red, 0) : color.new(color.green, 0)
+
+if barstate.islast
+    // We only populate the table on the last bar.
+    table.cell(rvolDisplay, 0, 0, "RVol: " + str.tostring(volpct) +"%", bgcolor=color_vol)
