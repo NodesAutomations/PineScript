@@ -2,12 +2,16 @@
 indicator("Test",overlay= true)
 
 //Comman Variables
-var rowId=1
-var colId=1
+var rowId=0
+var colId=0
 var textColor=color.white
 
 //Function to Get color value
-GetBGColor(x)=>x>=0?color.green:color.red
+GetEmaBGColor(x)=>x>=0?color.green:color.red
+
+method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
+    table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
+
 
 //EMA Calculation
 ema10 = ta.ema(close, 10)
@@ -19,14 +23,24 @@ ema21_Percentate=(close-ema21)/ema21
 ema50_Percentate=(close-ema50)/ema50
 
 if barstate.islast
-    var dashboard= table.new("top_right",2,10)
-    table.cell(dashboard,0,0," ")//Leaving first row for panel controls
-    table.cell(dashboard,0,1,"Dashboard",text_color = textColor,bgcolor = color.gray)
-    table.merge_cells(dashboard,0,1,1,2)
-    table.cell(dashboard,0,3,"EMA 10",text_color = textColor,bgcolor = color.black)
-    table.cell(dashboard,0,4,"EMA 21",text_color = textColor,bgcolor = color.black)
-    table.cell(dashboard,0,5,"EMA 50",text_color = textColor,bgcolor = color.black)
+    var dashboard= table.new("top_center",10,2)
 
-    table.cell(dashboard,1,3, str.tostring(ema10_Percentate,"0.00%"),text_color = textColor,bgcolor = GetBGColor(ema10_Percentate))
-    table.cell(dashboard,1,4,str.tostring(ema21_Percentate,"0.00%"),text_color = textColor,bgcolor = GetBGColor(ema21_Percentate))
-    table.cell(dashboard,1,5,str.tostring(ema50_Percentate,"0.00%"),text_color = textColor,bgcolor = GetBGColor(ema50_Percentate))
+    dashboard.Cells(0,colId,"EMA 10",color.black)
+    dashboard.Cells(1,colId, str.tostring(ema10_Percentate,"0.00%"), GetEmaBGColor(ema10_Percentate))
+    colId:=colId+1
+
+    dashboard.Cells(0,colId,"EMA 21",color.black)
+    dashboard.Cells(1,colId, str.tostring(ema21_Percentate,"0.00%"), GetEmaBGColor(ema21_Percentate))
+    colId:=colId+1
+
+    dashboard.Cells(0,colId,"EMA 50",color.black)
+    dashboard.Cells(1,colId, str.tostring(ema50_Percentate,"0.00%"), GetEmaBGColor(ema50_Percentate))
+    colId:=colId+1
+ 
+    dashboard.Cells(0,colId,"ATH",color.black)
+    dashboard.Cells(1,colId, "0", GetEmaBGColor(0))
+    colId:=colId+1
+
+    dashboard.Cells(0,colId,"RVol",color.black)
+    dashboard.Cells(1,colId, "0", GetEmaBGColor(0))
+    colId:=colId+1
