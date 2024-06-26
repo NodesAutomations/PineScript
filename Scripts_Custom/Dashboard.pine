@@ -7,11 +7,31 @@ var colId=0
 var textColor=color.white
 
 //Function to Get color value
-GetEmaBGColor(x)=>x>=0?color.green:color.red
+GetEmaBGColor(x)=>x>=0?color.green:x>=-0.02?color.orange:color.red
+GetAthBGColor(x)=>x>=-0.15?color.green:x>=-0.2?color.orange:color.red
+// GetChartHighest() returns the highest value of the given argument
+// for the entire chart.
+GetChartHighest(dataSeries = high) =>
+    var chartHighest = dataSeries
+    if dataSeries > nz(chartHighest, -1e10)
+        chartHighest := dataSeries
+    chartHighest
+
+
+// GetAllTimeHigh() returns the all-time highest value for the given series
+GetAllTimeHigh(dataSeries = high) =>
+    highestHTF = request.security(syminfo.tickerid, "D", 
+         GetChartHighest(dataSeries)[1], lookahead=barmerge.lookahead_on)
+    highestChartTF = GetChartHighest(dataSeries)
+    math.max(highestHTF, highestChartTF)
+
 
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
 
+//Ath Calculatoin
+float ath=GetAllTimeHigh()[0]
+ath_Percentage=(close-ath)/ath
 
 //EMA Calculation
 ema10 = ta.ema(close, 10)
@@ -38,9 +58,9 @@ if barstate.islast
     colId:=colId+1
  
     dashboard.Cells(0,colId,"ATH",color.black)
-    dashboard.Cells(1,colId, "0", GetEmaBGColor(0))
+    dashboard.Cells(1,colId, str.tostring(ath_Percentage,"0.00%"), GetAthBGColor(ath_Percentage))
     colId:=colId+1
 
     dashboard.Cells(0,colId,"RVol",color.black)
-    dashboard.Cells(1,colId, "0", GetEmaBGColor(0))
+    dashboard.Cells(1,colId, str.tostring(0,"0.00%"), GetEmaBGColor(0))
     colId:=colId+1
