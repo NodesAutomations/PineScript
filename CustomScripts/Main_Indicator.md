@@ -27,7 +27,8 @@ GetAllTimeHigh(dataSeries = high) =>
     math.max(highestHTF, highestChartTF)
 
 
-// Get and plot the all-time high plot(series=GetAllTimeHigh(), color=color.white, linewidth=1,title="All-Time High")
+// Get and plot the all-time high
+plot(series=GetAllTimeHigh(), color=color.white, linewidth=1,title="All-Time High")
 
 //Plot Moving Averages
 show_10d = input(true, "10 Day")
