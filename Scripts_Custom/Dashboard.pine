@@ -56,7 +56,8 @@ var rowId=0
 var colId=0
 var textColor=color.white
 dcr_Percentage=(close-low)/(high-low)
-GetDcrBGColor(x)=>x>=0.5?color.green:color.red
+tcr_Percentage=open-close[1]>=0?  (close-close[1])/(high-close[1]):(close-low)/(close[1]-low)
+GetDcrBGColor(x)=>x>=0.5?color.green:x>=0.4?color.orange:color.red
 adr_Percentage = 100 * (ta.sma(high/low, 20) - 1)
 GetAdrBGColor(x)=>x>=5?color.green:x>=4?color.orange:color.red
 
@@ -94,3 +95,6 @@ if barstate.islast and show_dashboard
     dashboard.Cells(rowId+1,colId, str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
     colId:=colId+1
 
+    dashboard.Cells(rowId,colId,"TCR",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(tcr_Percentage,"0.00%"), GetDcrBGColor(tcr_Percentage))
+    colId:=colId+1
