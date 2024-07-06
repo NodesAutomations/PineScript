@@ -1,0 +1,34 @@
+//@version=5
+indicator("Market Helper",overlay= true)
+
+// Create variables
+var dayHighPrice = 0.0
+var dayLowPrice  = 0.0
+var prevDayClose = 0.0
+var box dailyBox = na
+
+// See if a new calendar day started on the intra-day time frame
+newDayStart = dayofmonth != dayofmonth[1] and timeframe.isintraday
+
+// If a new day starts, set the high and low to that bar's data. Else
+// during the day track the highest high and lowest low.
+if newDayStart
+    dayHighPrice := high
+    dayLowPrice  := low
+    prevDayClose := close[1]
+else
+    dayHighPrice := math.max(dayHighPrice, high)
+    dayLowPrice  := math.min(dayLowPrice, low)
+
+// When a new day start, create a new box for that day.
+// Else, during the day, update that day's box.
+if newDayStart
+    dailyBox := box.new(left=bar_index, top=dayHighPrice,right=bar_index + 1, bottom=dayLowPrice,border_width=1)
+    box.set_right(dailyBox[1], bar_index[1])
+else
+    box.set_top(dailyBox, dayHighPrice)
+    box.set_rightbottom(dailyBox, right=bar_index + 1, bottom=dayLowPrice)
+    // Box Color Update
+    boxColor=close>prevDayClose?color.green:color.red
+    box.set_bgcolor(dailyBox, color.new(boxColor, 90))
+    box.set_border_color(dailyBox, boxColor)
