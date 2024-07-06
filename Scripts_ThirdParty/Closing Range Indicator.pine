@@ -1,0 +1,35 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © TintinTrading
+//https://www.tradingview.com/script/xRzgrqPw-TTI-Closing-Range-Indicator/
+
+//@version=5
+indicator("[TTI] Closing Range Indicator", overlay=true, max_labels_count=500)
+
+// Input for timeframe selection
+timeframeOption = input.string(title="Timeframe", options=["D", "W"], defval="D")
+invisible = input(true, title="Make invisible")
+// Calculate the closing range
+closingRange() =>
+    barRange = high - low
+    if barRange > 0
+        (close - low) / barRange * 100
+    else
+        0
+
+transp= invisible ? 100 : 50
+
+weeklyHigh = request.security(syminfo.tickerid, "W", high)
+weeklyLow = request.security(syminfo.tickerid, "W", low)
+weeklyClose = request.security(syminfo.tickerid, "W", close)
+weekRange = weeklyHigh - weeklyLow
+
+// Compute values based on the selected timeframe
+var float closingValue = na
+if timeframeOption == "D"
+    closingValue := closingRange()
+else
+    // Weekly computation
+    closingValue := weekRange > 0 ? (weeklyClose - weeklyLow) / weekRange * 100 : 0
+
+// Plot circle at the close of each bar
+label.new(x=bar_index, y=close, text="\n", style=label.style_label_center, color=color.rgb(255, 5, 218,transp), size=size.large, tooltip="CR: " + str.tostring(math.round(closingValue,2)) + "%")
