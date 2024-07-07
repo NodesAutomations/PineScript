@@ -23,7 +23,7 @@ else
 // When a new day start, create a new box for that day.
 // Else, during the day, update that day's box.
 if newDayStart
-    dailyBox := box.new(left=bar_index, top=dayHighPrice,right=bar_index + 1, bottom=dayLowPrice,border_width=1)
+    dailyBox := box.new(left=bar_index, top=dayHighPrice,right=bar_index + 1, bottom=dayLowPrice,border_width=1,border_style = line.style_dashed)
     box.set_right(dailyBox[1], bar_index[1])
 else
     box.set_top(dailyBox, dayHighPrice)
