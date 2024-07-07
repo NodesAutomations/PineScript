@@ -1,5 +1,6 @@
 //@version=5
 indicator("Test",overlay= true)
+import TradingView/Strategy/3
 int rowId=0
 int colId=0
 var textColor=color.white
@@ -8,17 +9,34 @@ var textColor=color.white
 dayLow=request.security(syminfo.tickerid,"1D",low)
 dayOpen=request.security(syminfo.tickerid,"1D",open)
 preDayClose= request.security(syminfo.tickerid,"1D",close[1])
+preDayLow= request.security(syminfo.tickerid,"1D",low[1])
 
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
 
-//Gap Up Calculation
-
+//Open Calculation
 open_Percentage=(dayOpen-preDayClose)/dayOpen
 GetOpenBGColor(x)=>x>=0.01?color.green:x>=-0.005?color.orange:color.red
 
+//Gap Calculation
 gap_Percentage= (dayLow-preDayClose)/dayLow
 GetGapBGColor(x)=>x>=0?color.green:x>=-0.01?color.orange:color.red
+
+//Qty Calculation
+int positionSize=input.int(300, "Position", minval=200, maxval=1000, step=1)*1000
+int qty=math.round(positionSize/close)
+
+//Stoploss
+enum sl
+    daylow ="Day Low"
+    preDayLow  = "Pre Day Low"
+
+slEnum = input.enum(sl.daylow, "Stoploss")
+GetSL(x)=>math.round(x*(1-0.002),2)
+
+float stoploss = switch slEnum
+    sl.daylow=>GetSL(dayLow)
+    sl.preDayLow=>GetSL(preDayLow)
 
 var dashboard= table.new("top_right",2,10)
 dashboard.Cells(rowId,colId,"Helper",color.blue)
@@ -34,30 +52,27 @@ dashboard.Cells(rowId,colId,"Gap",color.black)
 dashboard.Cells(rowId,colId+1, str.tostring(gap_Percentage,"0.00%"),GetGapBGColor(gap_Percentage))
 rowId:=rowId+1
 
-dashboard.Cells(rowId,colId,"Trigger",color.black)
-dashboard.Cells(rowId,colId+1,"0",color.green)
-rowId:=rowId+1
 
-dashboard.Cells(rowId,colId,"0.5 QTY",color.black)
-dashboard.Cells(rowId,colId+1,"0",color.green)
-rowId:=rowId+1
-
-dashboard.Cells(rowId,colId,"1 QTY",color.black)
-dashboard.Cells(rowId,colId+1,"0",color.green)
+dashboard.Cells(rowId,colId,"QTY",color.black)
+dashboard.Cells(rowId,colId+1, str.tostring(qty),color.green)
 rowId:=rowId+1
 
 dashboard.Cells(rowId,colId,"SL",color.black)
-dashboard.Cells(rowId,colId+1,"0",color.green)
+dashboard.Cells(rowId,colId+1,str.tostring(stoploss),color.green)
 rowId:=rowId+1
+
+// dashboard.Cells(rowId,colId,"Trigger",color.black)
+// dashboard.Cells(rowId,colId+1,"0",color.green)
+// rowId:=rowId+1
 
 //For stocks i am holding
-dashboard.Cells(rowId,colId,"Holding",color.blue)
-table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
-rowId:=rowId+1
+// dashboard.Cells(rowId,colId,"Holding",color.blue)
+// table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
+// rowId:=rowId+1
 
-dashboard.Cells(rowId,colId,"Gain",color.black)
-dashboard.Cells(rowId,colId+1,"0",color.green)
-rowId:=rowId+1
+// dashboard.Cells(rowId,colId,"Gain",color.black)
+// dashboard.Cells(rowId,colId+1,"0",color.green)
+// rowId:=rowId+1
 
 // dashboard.Cells(rowId,colId,"Risk",color.black)
 // dashboard.Cells(rowId,colId+1,"0",color.green)
