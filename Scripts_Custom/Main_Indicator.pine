@@ -38,14 +38,14 @@ GetAllTimeHigh(dataSeries = high) =>
 plot(series=GetAllTimeHigh(), color=color.white, linewidth=1,title="All-Time High")
 
 //// Bull Snort
-show_BullSnort = input(true, "BullSnort" )
+show_BullSnort = input(true, "BullSnort" ) and not timeframe.isintraday
 if show_BullSnort
     vol = ta.sma(volume, 50)
     if  volume >= (vol*3) and close > close[1] and close > hlc3  == true
         label.new(bar_index, low, yloc= yloc.belowbar, color= color.white, style= label.style_circle , size = size.auto)
 
 //// Inside bar
-show_InsideBar=input(true,"InsideBar")
+show_InsideBar=input(true,"InsideBar") and not timeframe.isintraday
 data=high[1]>=high and low[1]<=low and show_InsideBar
 plotshape(data, style=shape.diamond,location = location.belowbar, color= color.yellow, size = size.tiny, show_last=50)
 
