@@ -1,16 +1,17 @@
 //@version=5
 indicator("Test",overlay= true)
-int rowId=0
-int colId=0
-var textColor=color.white
 
-//Chart info
-dayLow=request.security(syminfo.tickerid,"1D",low)
-dayOpen=request.security(syminfo.tickerid,"1D",open)
-preDayClose= request.security(syminfo.tickerid,"1D",close[1])
-preDayLow= request.security(syminfo.tickerid,"1D",low[1])
+//// External data
 
-//Trigger Calculation
+type Trade
+    float BuyPrice
+    float Stoploss
+
+var holdingMap= map.new<string,Trade>()
+holdingMap.put("IREDA",Trade.new(181.6,219))
+holdingMap.put("HBLPOWER",Trade.new(518.6,531))
+holdingMap.put("OLECTRA",Trade.new(1903.35,1815.85))
+
 var triggerMap= map.new<string,float>()
 triggerMap.put("MOIL",545)
 triggerMap.put("GMDCLTD",404)
@@ -28,6 +29,17 @@ triggerMap.put("ACE",1550)
 triggerMap.put("ICEMAKE",920)
 triggerMap.put("NEWGEN",1028)
 
+//Common Inputs
+int rowId=0
+int colId=0
+var textColor=color.white
+
+dayLow=request.security(syminfo.tickerid,"1D",low)
+dayOpen=request.security(syminfo.tickerid,"1D",open)
+preDayClose= request.security(syminfo.tickerid,"1D",close[1])
+preDayLow= request.security(syminfo.tickerid,"1D",low[1])
+
+//Trigger Calculation
 float trigger=triggerMap.contains(syminfo.ticker)?triggerMap.get(syminfo.ticker):0
 trigger_Percentage=trigger>0? (close-trigger)/trigger:0
 GetTriggerBGColor(x)=>x>=0?color.green:x>=-0.02?color.orange:color.red
@@ -60,15 +72,6 @@ stoploss_Percentage= (close-stoploss)/stoploss
 GetStoplossBGColor(x)=>x<=0.02?color.green:x<=0.04?color.orange:color.red
 
 //Holding Stock Calculation
-type Trade
-    float BuyPrice
-    float Stoploss
-
-var holdingMap= map.new<string,Trade>()
-holdingMap.put("IREDA",Trade.new(181.6,219))
-holdingMap.put("HBLPOWER",Trade.new(518.6,531))
-holdingMap.put("OLECTRA",Trade.new(1903.35,1815.85))
-
 float buyPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).BuyPrice:0
 float gain_Percentage=buyPrice>0? (close-buyPrice) /buyPrice:0
 GetGainBGColor(x)=>x>=0?color.green:color.red
@@ -76,6 +79,7 @@ GetGainBGColor(x)=>x>=0?color.green:color.red
 float sellPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).Stoploss:0
 float sellPrice_Percentage=sellPrice>0? sellPrice/buyPrice-1:0
 
+//Table Generation
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
 
