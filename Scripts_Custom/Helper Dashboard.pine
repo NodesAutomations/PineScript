@@ -1,6 +1,5 @@
 //@version=5
 indicator("Test",overlay= true)
-import TradingView/Strategy/3
 int rowId=0
 int colId=0
 var textColor=color.white
@@ -11,8 +10,30 @@ dayOpen=request.security(syminfo.tickerid,"1D",open)
 preDayClose= request.security(syminfo.tickerid,"1D",close[1])
 preDayLow= request.security(syminfo.tickerid,"1D",low[1])
 
-method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
-    table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
+
+
+//Trigger Calculation
+var triggerMap= map.new<string,float>()
+triggerMap.put("MOIL",545)
+triggerMap.put("GMDCLTD",404)
+triggerMap.put("TRIVENI",398)
+triggerMap.put("MANGLMCEM",928)
+triggerMap.put("CHAMBLFERT",524)
+triggerMap.put("JINDALSTEL",1064)
+triggerMap.put("IONEXCHANG",665)
+triggerMap.put("QUICKHEAL",543)
+triggerMap.put("TRACXN",99)
+triggerMap.put("OLECTRA",1866)
+triggerMap.put("JBMA",2200)
+triggerMap.put("KIOCL",483)
+triggerMap.put("ACE",1550)
+triggerMap.put("ICEMAKE",920)
+triggerMap.put("NEWGEN",1028)
+
+
+float trigger=triggerMap.get(syminfo.ticker)
+trigger_Percentage= (close-trigger)/trigger
+GetTriggerBGColor(x)=>x>=0?color.green:x>=-0.02?color.orange:color.red
 
 //Open Calculation
 open_Percentage=(dayOpen-preDayClose)/dayOpen
@@ -38,11 +59,39 @@ float stoploss = switch slEnum
     sl.daylow=>GetSL(dayLow)
     sl.preDayLow=>GetSL(preDayLow)
 
-var dashboard= table.new("top_right",2,10)
+stoploss_Percentage= (close-stoploss)/stoploss
+GetStoplossBGColor(x)=>x<=0.02?color.green:x<=0.04?color.orange:color.red
+
+//Holding Stock Calculation
+type Trade
+    string ScriptName
+    float BuyPrice
+    float Stoploss
+
+var holdingMap= map.new<string,Trade>()
+holdingMap.put("IREDA",Trade.new("IREDA",181.6,219))
+holdingMap.put("HBLPOWER",Trade.new("HBLPOWER",518.6,531))
+holdingMap.put("OLECTRA",Trade.new("OLECTRA",1903.35,1815.85))
+
+float buyPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).BuyPrice:0
+float gain_Percentage=buyPrice>0? (close-buyPrice) /buyPrice:0
+GetGainBGColor(x)=>x>=0?color.green:color.red
+
+float sellPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).Stoploss:0
+float sellPrice_Percentage=sellPrice>0? sellPrice/buyPrice-1:0
+
+method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
+    table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
+
+var dashboard= table.new("top_right",2,15)
 dashboard.Cells(rowId,colId,"Helper",color.blue)
 //Merge First Row
 table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
 rowId:=rowId+2
+
+dashboard.Cells(rowId,colId,"Trigger",color.black)
+dashboard.Cells(rowId,colId+1,str.tostring(trigger_Percentage,"0.00%"),GetTriggerBGColor(trigger_Percentage))
+rowId:=rowId+1
 
 dashboard.Cells(rowId,colId,"Open",color.black)
 dashboard.Cells(rowId,colId+1, str.tostring(open_Percentage,"0.00%"),GetOpenBGColor(open_Percentage))
@@ -52,28 +101,27 @@ dashboard.Cells(rowId,colId,"Gap",color.black)
 dashboard.Cells(rowId,colId+1, str.tostring(gap_Percentage,"0.00%"),GetGapBGColor(gap_Percentage))
 rowId:=rowId+1
 
+dashboard.Cells(rowId,colId,"SL%",color.black)
+dashboard.Cells(rowId,colId+1,str.tostring(stoploss_Percentage,"0.00%"),GetStoplossBGColor(stoploss_Percentage))
+rowId:=rowId+1
+
+dashboard.Cells(rowId,colId,"SL",color.black)
+dashboard.Cells(rowId,colId+1,str.tostring(stoploss),GetStoplossBGColor(stoploss_Percentage))
+rowId:=rowId+1
 
 dashboard.Cells(rowId,colId,"QTY",color.black)
 dashboard.Cells(rowId,colId+1, str.tostring(qty),color.green)
 rowId:=rowId+1
 
-dashboard.Cells(rowId,colId,"SL",color.black)
-dashboard.Cells(rowId,colId+1,str.tostring(stoploss),color.green)
+//For stocks i am holding
+dashboard.Cells(rowId,colId,"Holding",color.blue)
+table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
 rowId:=rowId+1
 
-// dashboard.Cells(rowId,colId,"Trigger",color.black)
-// dashboard.Cells(rowId,colId+1,"0",color.green)
-// rowId:=rowId+1
+dashboard.Cells(rowId,colId,"Gain",color.black)
+dashboard.Cells(rowId,colId+1,str.tostring(gain_Percentage,"0.00%"),GetGainBGColor(stoploss_Percentage))
+rowId:=rowId+1
 
-//For stocks i am holding
-// dashboard.Cells(rowId,colId,"Holding",color.blue)
-// table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
-// rowId:=rowId+1
-
-// dashboard.Cells(rowId,colId,"Gain",color.black)
-// dashboard.Cells(rowId,colId+1,"0",color.green)
-// rowId:=rowId+1
-
-// dashboard.Cells(rowId,colId,"Risk",color.black)
-// dashboard.Cells(rowId,colId+1,"0",color.green)
-// rowId:=rowId+1
+dashboard.Cells(rowId,colId,"Risk",color.black)
+dashboard.Cells(rowId,colId+1,str.tostring(sellPrice_Percentage,"0.00%"),GetGainBGColor(sellPrice_Percentage))
+rowId:=rowId+1
