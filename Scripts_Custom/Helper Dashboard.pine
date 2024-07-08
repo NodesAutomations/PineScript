@@ -10,8 +10,6 @@ dayOpen=request.security(syminfo.tickerid,"1D",open)
 preDayClose= request.security(syminfo.tickerid,"1D",close[1])
 preDayLow= request.security(syminfo.tickerid,"1D",low[1])
 
-
-
 //Trigger Calculation
 var triggerMap= map.new<string,float>()
 triggerMap.put("MOIL",545)
@@ -30,9 +28,8 @@ triggerMap.put("ACE",1550)
 triggerMap.put("ICEMAKE",920)
 triggerMap.put("NEWGEN",1028)
 
-
-float trigger=triggerMap.get(syminfo.ticker)
-trigger_Percentage= (close-trigger)/trigger
+float trigger=triggerMap.contains(syminfo.ticker)?triggerMap.get(syminfo.ticker):0
+trigger_Percentage=trigger>0? (close-trigger)/trigger:0
 GetTriggerBGColor(x)=>x>=0?color.green:x>=-0.02?color.orange:color.red
 
 //Open Calculation
@@ -90,7 +87,7 @@ table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
 rowId:=rowId+2
 
 dashboard.Cells(rowId,colId,"Trigger",color.black)
-dashboard.Cells(rowId,colId+1,str.tostring(trigger_Percentage,"0.00%"),GetTriggerBGColor(trigger_Percentage))
+dashboard.Cells(rowId,colId+1,trigger>0?str.tostring(trigger_Percentage,"0.00%"):"-",GetTriggerBGColor(trigger_Percentage))
 rowId:=rowId+1
 
 dashboard.Cells(rowId,colId,"Open",color.black)
@@ -119,9 +116,9 @@ table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
 rowId:=rowId+1
 
 dashboard.Cells(rowId,colId,"Gain",color.black)
-dashboard.Cells(rowId,colId+1,str.tostring(gain_Percentage,"0.00%"),GetGainBGColor(stoploss_Percentage))
+dashboard.Cells(rowId,colId+1,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(stoploss_Percentage))
 rowId:=rowId+1
 
 dashboard.Cells(rowId,colId,"Risk",color.black)
-dashboard.Cells(rowId,colId+1,str.tostring(sellPrice_Percentage,"0.00%"),GetGainBGColor(sellPrice_Percentage))
+dashboard.Cells(rowId,colId+1,sellPrice>0?str.tostring(sellPrice_Percentage,"0.00%"):"-",GetGainBGColor(sellPrice_Percentage))
 rowId:=rowId+1
