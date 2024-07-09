@@ -7,27 +7,24 @@ type Trade
     float Stoploss
 
 var holdingMap= map.new<string,Trade>()
-holdingMap.put("IREDA",Trade.new(181.6,219))
-holdingMap.put("HBLPOWER",Trade.new(518.6,531))
-holdingMap.put("OLECTRA",Trade.new(1903.35,1815.85))
+holdingMap.put("IREDA",Trade.new(181.6,231))
+holdingMap.put("HBLPOWER",Trade.new(518.6,580))
+holdingMap.put("OLECTRA",Trade.new(1903.35,1816))
 
 var triggerMap= map.new<string,float>()
-triggerMap.put("MOIL",545)
+triggerMap.put("GODIGIT",350)
+triggerMap.put("IXIGO",176)
 triggerMap.put("GMDCLTD",404)
-triggerMap.put("TRIVENI",398)
-triggerMap.put("MANGLMCEM",928)
+triggerMap.put("MOIL",545)
 triggerMap.put("CHAMBLFERT",524)
-triggerMap.put("JINDALSTEL",1064)
-triggerMap.put("IONEXCHANG",665)
+triggerMap.put("JBMA",2200)
+triggerMap.put("TRIVENI",398)
+triggerMap.put("KIOCL",483)
+triggerMap.put("BALMLAWRIE",295)
+triggerMap.put("SUNDARMHLD",276)
 triggerMap.put("QUICKHEAL",543)
 triggerMap.put("TRACXN",99)
-triggerMap.put("OLECTRA",1866)
-triggerMap.put("JBMA",2200)
-triggerMap.put("KIOCL",483)
 triggerMap.put("ACE",1550)
-triggerMap.put("ICEMAKE",920)
-triggerMap.put("NEWGEN",1028)
-
 
 // Create variables
 var dayHighPrice = 0.0
@@ -95,7 +92,7 @@ enum sl
     preDayLow  = "Pre Day Low"
 
 slEnum = input.enum(sl.daylow, "Stoploss")
-GetSL(x)=>math.round(x*(1-0.002),2)
+GetSL(x)=>math.round_to_mintick(math.round(x*(1-0.002),2))
 
 float stoploss = switch slEnum
     sl.daylow=>GetSL(dayLow)
