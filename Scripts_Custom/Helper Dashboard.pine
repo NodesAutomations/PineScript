@@ -62,7 +62,7 @@ enum sl
     preDayLow  = "Pre Day Low"
 
 slEnum = input.enum(sl.daylow, "Stoploss")
-GetSL(x)=>math.round(x*(1-0.002),2)
+GetSL(x)=>math.round_to_mintick(math.round(x*(1-0.002),2))
 
 float stoploss = switch slEnum
     sl.daylow=>GetSL(dayLow)
