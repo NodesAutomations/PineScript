@@ -40,29 +40,12 @@ float ath=GetAllTimeHigh()[0]
 ath_Percentage=(dailyClose-ath)/ath
 GetAthBGColor(x)=>x>=-0.15?color.green:x>=-0.2?color.orange:color.red
 
-////Relative Volume Calculation
-
-Round( _val, _decimals) => 
-    // Rounds _val to _decimals places.
-    _p = math.pow(10,_decimals)
-    math.round(math.abs(_val)*_p)/_p*math.sign(_val)
-
-today_vol = request.security(syminfo.tickerid, "D", volume)
-yday_vol = request.security(syminfo.tickerid, "D", volume[1])
-avg_vol = request.security(syminfo.tickerid, "D", ta.sma(yday_vol, 20))
-rvol_Percentate = (today_vol / avg_vol ) 
-
-GetRvolBGColor(x)=>x>=0.5?color.green:x>=0.2?color.orange:color.red
-
 //// Table Generation
 show_dashboard = input(true, "Dashboard" )
 
 var rowId=0
 var colId=0
 var textColor=color.white
-
-dcr_Percentage=(dailyClose-dailyLow)/(dailyHigh-dailyLow)
-GetDcrBGColor(x)=>x>=0.5?color.green:x>=0.4?color.orange:color.red
 
 adr_Percentage = 100 * (request.security(syminfo.tickerid, "1D",ta.sma(high/low, 20)) - 1)
 GetAdrBGColor(x)=>x>=4?color.green:x>=3?color.orange:color.red
@@ -91,12 +74,4 @@ if barstate.islast and show_dashboard
 
     dashboard.Cells(rowId,colId,"ADR",color.black)  
     dashboard.Cells(rowId+1,colId, str.tostring(adr_Percentage,"0.00")+"%", GetAdrBGColor(adr_Percentage))
-    colId:=colId+1
-    
-    dashboard.Cells(rowId,colId,"RVol",color.black)
-    dashboard.Cells(rowId+1,colId, str.tostring(rvol_Percentate,"0.00%"), GetRvolBGColor(rvol_Percentate))
-    colId:=colId+1
-
-    dashboard.Cells(rowId,colId,"DCR",color.black)
-    dashboard.Cells(rowId+1,colId, str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
     colId:=colId+1
