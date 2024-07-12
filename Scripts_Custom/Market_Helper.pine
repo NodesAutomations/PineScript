@@ -25,6 +25,7 @@ triggerMap.put("SUNDARMHLD",276)
 triggerMap.put("QUICKHEAL",543)
 triggerMap.put("TRACXN",99)
 triggerMap.put("ACE",1550)
+triggerMap.put("MAPMYINDIA",2458)
 
 // Create variables
 var dayHighPrice = 0.0
@@ -74,7 +75,7 @@ preDayLow= request.security(syminfo.tickerid,"1D",low[1])
 //Trigger Calculation
 float trigger=triggerMap.contains(syminfo.ticker)?triggerMap.get(syminfo.ticker):0
 trigger_Percentage=trigger>0? (close-trigger)/trigger:0
-GetTriggerBGColor(x)=>x>=0?color.green:x>=-0.02?color.orange:color.red
+GetTriggerBGColor(x)=>x>=0.02?color.red:x>=-0.02?color.green:color(na)
 
 //Open Calculation
 open_Percentage=(dayOpen-preDayClose)/dayOpen
@@ -106,7 +107,7 @@ GetStoplossBGColor(x)=>x>0.04?color.red: x>=0.025?color.orange:x>=0.01?color(na)
 //Holding Stock Calculation
 float buyPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).BuyPrice:0
 float gain_Percentage=buyPrice>0? (close-buyPrice) /buyPrice:0
-GetGainBGColor(x)=>x>=0?color.green:color.red
+GetGainBGColor(x)=>x>=0.15?color.green:x>=0?color(na):x>=-0.03?color.orange:color.red
 
 float sellPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).Stoploss:0
 float sellPrice_Percentage=sellPrice>0? sellPrice/buyPrice-1:0
@@ -135,7 +136,7 @@ method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolo
 var dashboard= table.new("top_right",20,3)
 
 dashboard.Cells(rowId,colId,"Gain",color.black)
-dashboard.Cells(rowId+1,colId,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(stoploss_Percentage))
+dashboard.Cells(rowId+1,colId,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(gain_Percentage))
 colId:=colId+1
 
 dashboard.Cells(rowId,colId,"Risk",color.black)
