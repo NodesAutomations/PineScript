@@ -1,6 +1,5 @@
 //@version=5
 indicator("Test",overlay= true)
-
 //// External data
 
 type Trade
@@ -8,26 +7,33 @@ type Trade
     float Stoploss
 
 var holdingMap= map.new<string,Trade>()
-holdingMap.put("IREDA",Trade.new(181.6,219))
-holdingMap.put("HBLPOWER",Trade.new(518.6,531))
-holdingMap.put("OLECTRA",Trade.new(1903.35,1815.85))
+holdingMap.put("OLECTRA",Trade.new(1903.35,1818))
+holdingMap.put("SUNDARMHLD",Trade.new(273.68,266))
+holdingMap.put("MANAPPURAM",Trade.new(208.85,204))
+holdingMap.put("KNRCON",Trade.new(374.22,368))
 
 var triggerMap= map.new<string,float>()
-triggerMap.put("MOIL",545)
-triggerMap.put("GMDCLTD",404)
-triggerMap.put("TRIVENI",398)
-triggerMap.put("MANGLMCEM",928)
-triggerMap.put("CHAMBLFERT",524)
-triggerMap.put("JINDALSTEL",1064)
-triggerMap.put("IONEXCHANG",665)
-triggerMap.put("QUICKHEAL",543)
+triggerMap.put("GODIGIT",367)
+triggerMap.put("POWERMECH",5330)
+triggerMap.put("CHENNPETRO",1035)
+triggerMap.put("ORIENTCEM",311)
+triggerMap.put("IOC",176)
+triggerMap.put("NAVA",750)
+triggerMap.put("GMDCLTD",428)
+triggerMap.put("RATEGAIN",821)
+triggerMap.put("ZENTEC",1340)
+triggerMap.put("MAPMYINDIA",2462)
+triggerMap.put("INOXGREEN",170)
+triggerMap.put("LIKHITHA",478)
+triggerMap.put("COROMANDEL",1639)
+triggerMap.put("EMUDHRA",916)
+triggerMap.put("TIMETECHNO",340)
+triggerMap.put("DSSL",1398)
+triggerMap.put("ARE_M",1735)
+triggerMap.put("EXICOM",475)
 triggerMap.put("TRACXN",99)
-triggerMap.put("OLECTRA",1866)
-triggerMap.put("JBMA",2200)
-triggerMap.put("KIOCL",483)
-triggerMap.put("ACE",1550)
-triggerMap.put("ICEMAKE",920)
-triggerMap.put("NEWGEN",1028)
+triggerMap.put("QUICKHEAL",543)
+triggerMap.put("HINDZINC",718)
 
 //Common Inputs
 int rowId=0
@@ -35,7 +41,9 @@ int colId=0
 var textColor=color.white
 
 dayLow=request.security(syminfo.tickerid,"1D",low)
+dayHigh=request.security(syminfo.tickerid,"1D",high)
 dayOpen=request.security(syminfo.tickerid,"1D",open)
+dayClose=request.security(syminfo.tickerid,"1D",close)
 preDayClose= request.security(syminfo.tickerid,"1D",close[1])
 preDayLow= request.security(syminfo.tickerid,"1D",low[1])
 
@@ -58,8 +66,8 @@ int qty=math.round(positionSize/close)
 
 //Stoploss
 enum sl
-    daylow ="Day Low"
-    preDayLow  = "Pre Day Low"
+    daylow ="DayLow"
+    preDayLow  = "Pre DayLow"
 
 slEnum = input.enum(sl.daylow, "Stoploss")
 GetSL(x)=>math.round_to_mintick(math.round(x*(1-0.002),2))
@@ -79,49 +87,75 @@ GetGainBGColor(x)=>x>=0?color.green:color.red
 float sellPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).Stoploss:0
 float sellPrice_Percentage=sellPrice>0? sellPrice/buyPrice-1:0
 
+////Relative Volume Calculation
+
+Round( _val, _decimals) => 
+    // Rounds _val to _decimals places.
+    _p = math.pow(10,_decimals)
+    math.round(math.abs(_val)*_p)/_p*math.sign(_val)
+
+today_vol = request.security(syminfo.tickerid, "D", volume)
+yday_vol = request.security(syminfo.tickerid, "D", volume[1])
+avg_vol = request.security(syminfo.tickerid, "D", ta.sma(yday_vol, 20))
+rvol_Percentate = (today_vol / avg_vol ) 
+GetRvolBGColor(x)=>x>=0.5?color.green:x>=0.2?color.orange:color.red
+
+//DCR
+dcr_Percentage=(dayClose-dayLow)/(dayHigh-dayLow)
+GetDcrBGColor(x)=>x>=0.5?color.green:x>=0.4?color.orange:color.red
+
 //Table Generation
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
 
-var dashboard= table.new("top_right",2,15)
-dashboard.Cells(rowId,colId,"Helper",color.blue)
-//Merge First Row
-table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
-rowId:=rowId+2
-
-dashboard.Cells(rowId,colId,"Trigger",color.black)
-dashboard.Cells(rowId,colId+1,trigger>0?str.tostring(trigger_Percentage,"0.00%"):"-",GetTriggerBGColor(trigger_Percentage))
-rowId:=rowId+1
-
-dashboard.Cells(rowId,colId,"Open",color.black)
-dashboard.Cells(rowId,colId+1, str.tostring(open_Percentage,"0.00%"),GetOpenBGColor(open_Percentage))
-rowId:=rowId+1
-
-dashboard.Cells(rowId,colId,"Gap",color.black)
-dashboard.Cells(rowId,colId+1, str.tostring(gap_Percentage,"0.00%"),GetGapBGColor(gap_Percentage))
-rowId:=rowId+1
-
-dashboard.Cells(rowId,colId,"SL%",color.black)
-dashboard.Cells(rowId,colId+1,str.tostring(stoploss_Percentage,"0.00%"),GetStoplossBGColor(stoploss_Percentage))
-rowId:=rowId+1
-
-dashboard.Cells(rowId,colId,"SL",color.black)
-dashboard.Cells(rowId,colId+1,str.tostring(stoploss),GetStoplossBGColor(stoploss_Percentage))
-rowId:=rowId+1
-
-dashboard.Cells(rowId,colId,"QTY",color.black)
-dashboard.Cells(rowId,colId+1, str.tostring(qty),color.green)
-rowId:=rowId+1
-
-//For stocks i am holding
-dashboard.Cells(rowId,colId,"Holding",color.blue)
-table.merge_cells(dashboard,colId,rowId,colId+1,rowId)
-rowId:=rowId+1
+var dashboard= table.new("top_right",20,3)
 
 dashboard.Cells(rowId,colId,"Gain",color.black)
-dashboard.Cells(rowId,colId+1,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(stoploss_Percentage))
-rowId:=rowId+1
+dashboard.Cells(rowId+1,colId,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(stoploss_Percentage))
+colId:=colId+1
 
 dashboard.Cells(rowId,colId,"Risk",color.black)
-dashboard.Cells(rowId,colId+1,sellPrice>0?str.tostring(sellPrice_Percentage,"0.00%"):"-",GetGainBGColor(sellPrice_Percentage))
-rowId:=rowId+1
+dashboard.Cells(rowId+1,colId,sellPrice>0?str.tostring(sellPrice_Percentage,"0.00%"):"-",GetGainBGColor(sellPrice_Percentage))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"GTT",color.black)
+dashboard.Cells(rowId+1,colId,trigger>0?str.tostring(trigger_Percentage,"0.00%"):"-",GetTriggerBGColor(trigger_Percentage))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"",color(na))
+dashboard.Cells(rowId+1,colId,"",color(na))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"RVol",color.black)
+dashboard.Cells(rowId+1,colId, str.tostring(rvol_Percentate,"0.00%"), GetRvolBGColor(rvol_Percentate))
+colId:=colId+1
+dashboard.Cells(rowId,colId,"Open",color.black)
+dashboard.Cells(rowId+1,colId,str.tostring(open_Percentage,"0.00%"),GetOpenBGColor(open_Percentage))
+colId:=colId+1
+dashboard.Cells(rowId,colId,"Gap",color.black)
+dashboard.Cells(rowId+1,colId, str.tostring(gap_Percentage,"0.00%"),GetGapBGColor(gap_Percentage))
+colId:=colId+1
+dashboard.Cells(rowId,colId,"DCR",color.black)
+dashboard.Cells(rowId+1,colId,str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"",color(na))
+dashboard.Cells(rowId+1,colId,"",color(na))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"SL%",color.black)
+dashboard.Cells(rowId+1,colId,str.tostring(stoploss_Percentage,"0.00%"),GetStoplossBGColor(stoploss_Percentage))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"SL",color.black)
+dashboard.Cells(rowId+1,colId,str.tostring(stoploss),GetStoplossBGColor(stoploss_Percentage))
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"SL AT",color.black)
+dashboard.Cells(rowId+1,colId,str.tostring(slEnum),color.green)
+colId:=colId+1
+
+dashboard.Cells(rowId,colId,"QTY",color.black)
+dashboard.Cells(rowId+1,colId,str.tostring(qty),color.green)
+colId:=colId+1
+ 
