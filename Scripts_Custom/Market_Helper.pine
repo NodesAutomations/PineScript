@@ -127,7 +127,7 @@ GetRvolBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color
 
 //DCR
 dcr_Percentage=(dayClose-dayLow)/(dayHigh-dayLow)
-GetDcrBGColor(x)=>x>=0.5?color.green:x>=0.4?color.orange:color.red
+GetDcrBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color.red
 
 //Table Generation
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
