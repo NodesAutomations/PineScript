@@ -33,6 +33,7 @@ You can also open symbols from [seed_crypto_santiment](https://github.com/tradi
 - `BTC_DEV_ACTIVITY` is the `BTC_DEV_ACTIVITY.CSV` data file name.
 
 Using the built-in [`request.seed()`](https://www.tradingview.com/pine-script-reference/v5/#fun_request%7Bdot%7Dseed) function from the [Pine Script™ language](https://www.tradingview.com/pine-script-docs/en/v5/index.html) and the available data, you can build a chart.
+
 ```js
 //@version=5
 indicator("BTC Dev Activity", format=format.volume)

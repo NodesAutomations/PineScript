@@ -1,5 +1,5 @@
 ### Create Simple Table
-```
+```js
 indicator("Test",overlay= true)
 var dashboard= table.new("top_right",2,10)
 //Ignore First Row

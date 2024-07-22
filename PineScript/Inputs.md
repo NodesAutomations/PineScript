@@ -1,5 +1,5 @@
 ### Get integer value
-```
+```js
 //Simple one
 i_len=input.int(10,"i")
 //Using Min and max value and step

@@ -15,7 +15,7 @@
 ### Weekly values
 
 Sample code to get weekly values
-```
+```js
 weeklyHigh = request.security(syminfo.tickerid, "W", high)
 weeklyLow = request.security(syminfo.tickerid, "W", low)
 weeklyClose = request.security(syminfo.tickerid, "W", close)

@@ -1,5 +1,5 @@
 ### Map
-```
+```js
 var triggerMap= map.new<string,float>()
 triggerMap.put("MOIL",545)
 triggerMap.put("GMDCLTD",404)
@@ -21,7 +21,7 @@ triggerMap.put("NEWGEN",1028)
 float trigger=triggerMap.contains(syminfo.ticker)?triggerMap.get(syminfo.ticker):0
 ```
 ### Custom Types
-```
+```js
 type Trade
     float BuyPrice
     float Stoploss

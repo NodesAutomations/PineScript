@@ -1,5 +1,5 @@
 ### Script 
-```
+```js
 //@version=5
 indicator("Test",overlay = true)
 //Inputs
