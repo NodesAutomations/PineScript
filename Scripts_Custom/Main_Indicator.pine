@@ -1,6 +1,9 @@
 //@version=5 
 indicator(title="Main", overlay=true)
 
+//Tolerance for Calculation Checks
+float tolerance=input.float(0.1,"Tolerance %", minval=0.1, maxval=2, step=0.1)/100
+
 //// Plot Moving Averages
 show_10d = input(true, "10 Day")
 plot(show_10d ? ta.ema(close, 10) : na, color = #ef2a57, title="10 Day")
@@ -48,7 +51,8 @@ if show_BullSnort
 
 //// Inside bar
 show_InsideBar=input(true,"InsideBar") and not timeframe.isintraday
-data=high[1]>=high and low[1]<=low and show_InsideBar
+
+data=high[1]*(1+tolerance)>=high and low[1]<=low*(1+tolerance) and show_InsideBar
 plotshape(data, style=shape.diamond,location = location.belowbar, color= color.yellow, size = size.tiny, show_last=50)
 
 //// Common Inputs
