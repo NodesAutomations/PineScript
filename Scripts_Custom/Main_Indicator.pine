@@ -17,6 +17,8 @@ plot(show_100d ? ta.ema(close, 100 ) : na, color = #3768fd, title="100 Day")
 show_200d = input(false, "200 Day" )
 plot(show_200d ? ta.ema(close, 200 ) : na, color = #fde947, title="200 Day")
 
+plot(timeframe.isintraday ?  request.security(syminfo.tickerid, "1D",ta.ema(close, 10)) : na, color = #ef2a57,linewidth = 2, title="10 Day Fix")
+
 //// Plot All time High
 
 // GetChartHighest() returns the highest value of the given argument
