@@ -88,7 +88,7 @@ GetGainBGColor(x)=>x>=0.15?color.green:x>=0?color(na):x>=-0.03?color.orange:colo
 
 currentDate = timestamp(year(timenow), month(timenow), dayofmonth(timenow), 0, 0)
 
-dateString = holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).OrderDate:""
+dateString = holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).OrderDate: str.format_time(currentDate, "yyyyMMdd", syminfo.timezone)
 
 dyear =int( str.tonumber(str.substring(dateString, 0, 4)))
 dmonth = int( str.tonumber(str.substring(dateString, 4, 6)))
@@ -96,7 +96,7 @@ dday = int( str.tonumber(str.substring(dateString, 6, 8)))
 
 startDate= timestamp(dyear, dmonth,dday, 0, 0)
 
-int NOD= (currentDate-startDate)/(24 * 60 * 60 * 1000)
+int NOD= ((currentDate-startDate)/(24 * 60 * 60 * 1000))+1
 GetNodBGColor(x)=>x>6?color.red:color(na)
 
 ////Relative Volume Calculation
@@ -127,7 +127,7 @@ dashboard.Cells(rowId+1,colId,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):
 colId:=colId+1
 
 dashboard.Cells(rowId,colId,"NOD",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(NOD),GetNodBGColor(NOD))
+dashboard.Cells(rowId+1,colId,buyPrice>0?str.tostring(NOD):"-",GetNodBGColor(NOD))
 colId:=colId+1
 
 dashboard.Cells(rowId,colId,"",color(na))
