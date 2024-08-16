@@ -71,6 +71,9 @@ ema50_Percentate=(dailyClose-ema50)/ema50
 
 GetEmaBGColor(x)=>x>=0.03?color(na):x>=0?color.green:color.red
 
+string emaCheck=(ema10>ema21) and (ema21>ema50)?"Pass":"Fail"
+GeEmaCheckBGColor(x)=>x=="Pass"?color(na):color.red
+
 ////Ath Calculatoin
 
 float ath=GetAllTimeHigh()[0]
@@ -112,3 +115,12 @@ if barstate.islast and show_dashboard
     dashboard.Cells(rowId,colId,"ADR",color.black)  
     dashboard.Cells(rowId+1,colId, str.tostring(adr_Percentage,"0.00")+"%", GetAdrBGColor(adr_Percentage))
     colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"EMA",color.black)
+    dashboard.Cells(rowId+1,colId, emaCheck, GeEmaCheckBGColor(emaCheck))
+    colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"Sector",color.black)  
+    dashboard.Cells(rowId+1,colId, syminfo.sector, color(na))
+    colId:=colId+1
+
