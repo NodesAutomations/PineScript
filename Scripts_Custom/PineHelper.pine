@@ -1,0 +1,35 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © vkpunique
+
+//@version=5
+
+// @description TODO: add library description here
+library("PineHelper", overlay=true)
+
+// @function TODO: add function description here
+// @param x TODO: add parameter x description here
+// @returns TODO: add what function returns
+export fun(float x) =>
+	//TODO : add function body and return value here
+	x
+
+// @function Get Background Color Using 0,1 input
+// @returns Color Type
+export GetBGColor2(int value) =>
+	switch value
+		1=>color.green
+		0=>color.red
+		=>color(na)
+
+// @function Get Background Color Using 0,1,-1 input
+// @returns Color Type
+export GetBGColor3(int value) =>
+	switch value
+		1=>color.green
+		0=>color(na)
+		-1=>color.red
+		=>color(na)
+
+//@function Simplified version to update table cells
+export method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
+    table.cell(tbl,colId,rowId,cellText,text_color = color.white,bgcolor = backgroundcolor)
