@@ -120,65 +120,61 @@ GetDcrBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color.
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
 
-var dashboard= table.new("top_right",4,10)
+if barstate.islast 
+    var dashboard= table.new("top_right",4,10)
 
-//Current Holding Stats
-dashboard.Cells(rowId,colId,"Gain",color.black)
-dashboard.Cells(rowId+1,colId,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(gain_Percentage))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
+    //Current Holding Stats
+    dashboard.Cells(rowId,colId,"Gain",color.black)
+    dashboard.Cells(rowId+1,colId,buyPrice>0? str.tostring(gain_Percentage,"0.00%"):"-",GetGainBGColor(gain_Percentage))
+    colId:=colId+1
 
-dashboard.Cells(rowId,colId,"NOD",color.black)
-dashboard.Cells(rowId+1,colId,buyPrice>0?str.tostring(NOD):"-",GetNodBGColor(NOD))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
+    dashboard.Cells(rowId,colId,"NOD",color.black)
+    dashboard.Cells(rowId+1,colId,buyPrice>0?str.tostring(NOD):"-",GetNodBGColor(NOD))
+    colId:=colId+1
 
-dashboard.Cells(rowId,colId,"-",color.black)
-dashboard.Cells(rowId+1,colId,"",color(na))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
+    dashboard.Cells(rowId,colId,"-",color.black)
+    dashboard.Cells(rowId+1,colId,"",color(na))
+    colId:=colId+1
 
-dashboard.Cells(rowId,colId,"-",color.black)
-dashboard.Cells(rowId+1,colId,"",color(na))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
+    dashboard.Cells(rowId,colId,"-",color.black)
+    dashboard.Cells(rowId+1,colId,"",color(na))
+    colId:=colId+1
 
-//Live Stats
-rowId:=rowId+3
-colId:=0
-dashboard.Cells(rowId,colId,"RVol",color.black)
-dashboard.Cells(rowId+1,colId, str.tostring(rvol_Percentate,"0.00%"), GetRvolBGColor(rvol_Percentate))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
-dashboard.Cells(rowId,colId,"Open",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(open_Percentage,"0.00%"),GetOpenBGColor(open_Percentage))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
-dashboard.Cells(rowId,colId,"Gap",color.black)
-dashboard.Cells(rowId+1,colId, str.tostring(gap_Percentage,"0.00%"),GetGapBGColor(gap_Percentage))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
-dashboard.Cells(rowId,colId,"DCR",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
-dashboard.Cells(rowId+2,colId,"",color(na))
-colId:=colId+1
+    //Live Stats
+    dashboard.Cells(rowId+2,0,"",color(na))
+    rowId:=rowId+3
+    colId:=0
 
-//Stoploss Calculations
-rowId:=rowId+3
-colId:=0
-dashboard.Cells(rowId,colId,"SL%",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(stoploss_Percentage,"0.00%"),GetStoplossBGColor(stoploss_Percentage))
-colId:=colId+1
+    dashboard.Cells(rowId,colId,"RVol",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(rvol_Percentate,"0.00%"), GetRvolBGColor(rvol_Percentate))
+    colId:=colId+1
+    dashboard.Cells(rowId,colId,"Open",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(open_Percentage,"0.00%"),GetOpenBGColor(open_Percentage))
+    colId:=colId+1
+    dashboard.Cells(rowId,colId,"Gap",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(gap_Percentage,"0.00%"),GetGapBGColor(gap_Percentage))
+    colId:=colId+1
+    dashboard.Cells(rowId,colId,"DCR",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
+    colId:=colId+1
 
-dashboard.Cells(rowId,colId,"SL",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(stoploss),color(na))
-colId:=colId+1
+    //Stoploss Calculations
+    dashboard.Cells(rowId+2,0,"",color(na))
+    rowId:=rowId+3
+    colId:=0
+    dashboard.Cells(rowId,colId,"SL%",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(stoploss_Percentage,"0.00%"),GetStoplossBGColor(stoploss_Percentage))
+    colId:=colId+1
 
-dashboard.Cells(rowId,colId,"SL AT",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(slEnum),color(na))
-colId:=colId+1
+    dashboard.Cells(rowId,colId,"SL",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(stoploss),color(na))
+    colId:=colId+1
 
-dashboard.Cells(rowId,colId,"QTY",color.black)
-dashboard.Cells(rowId+1,colId,str.tostring(qty),color(na))
-colId:=colId+1
- 
+    dashboard.Cells(rowId,colId,"SL AT",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(slEnum),color(na))
+    colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"QTY",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(qty),color(na))
+    colId:=colId+1
+    
