@@ -1,0 +1,38 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © vkpunique
+
+//@version=5
+indicator("Calculator",overlay= true)
+
+//Replace this with phhelper
+
+method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
+    table.cell(tbl,colId,rowId,cellText,text_color = color.white,bgcolor = backgroundcolor)
+
+//General variables
+[dailyOpen,dailyHigh,dailyLow,dailyClose] = request.security(syminfo.tickerid, "1D", [open,high,low,close])
+
+//Relative Volume
+today_vol = request.security(syminfo.tickerid, "D", volume)
+yday_vol = request.security(syminfo.tickerid, "D", volume[1])
+avg_vol = request.security(syminfo.tickerid, "D", ta.sma(yday_vol, 20))
+rvol_Percentate = (today_vol / avg_vol ) 
+GetRvolBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color.red
+
+//DCR
+dcr_Percentage=(dailyClose-dailyLow)/(dailyHigh-dailyLow)
+GetDcrBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color.red
+
+int rowId=0
+int colId=0
+if barstate.islast 
+    var dashboard= table.new("top_right",2,10)
+
+    dashboard.Cells(rowId,colId,"RVol",color.black)
+    dashboard.Cells(rowId+1,colId, str.tostring(rvol_Percentate,"0.00%"), GetRvolBGColor(rvol_Percentate))
+    colId:=colId+1
+
+    dashboard.Cells(rowId,colId,"DCR",color.black)
+    dashboard.Cells(rowId+1,colId,str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
+    colId:=colId+1
+
