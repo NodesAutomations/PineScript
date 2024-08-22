@@ -34,7 +34,7 @@ export method ToCrore(float value)=>
 
 // @function Get Background Color Using 0,1 input
 // @returns Color Type
-export GetBGColor2(int value) =>
+export GetBGColor(int value) =>
 	switch value
 		1=>color.green
 		0=>color.red
@@ -48,6 +48,23 @@ export GetBGColor3(int value) =>
 		0=>color(na)
 		-1=>color.red
 		=>color(na)
+
+export method GetBGColor(bool value) =>
+	switch value
+		true=>color.green
+		false=>color.red
+		=>color(na)
+
+
+export method GetBGColorUp(float x,float badValue,float okValue,float normalValue)=>
+    if x<badValue
+        color.red
+    else if x<okValue
+        color.orange    
+	else if x<normalValue
+        color(na)
+    else
+        color.green
 
 export method GetBGColor(float x,float lowEnd,float lowEdge,float perfect,float normal, float highEdge)=>
     if x<lowEnd
