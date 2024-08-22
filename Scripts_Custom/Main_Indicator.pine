@@ -4,10 +4,6 @@ import vkpunique/PineHelper/1 as pHelper
 
 GetSectorTrend(string sector)=>
 	var sectorMap= map.new<string,int>()
-    sectorMap.put("Finance",1)
-    sectorMap.put("Health Services",1)
-    sectorMap.put("Health Technology",1)
-    sectorMap.put("Technology Services",1)
 	sectorMap.contains(sector)?sectorMap.get(sector):0
 
 GetIndustryTrend(string industry)=>
@@ -113,14 +109,14 @@ free_float = nz(request.financial(syminfo.tickerid, 'FLOAT_SHARES_OUTSTANDING', 
 ff = na(ta.vwap) ? free_float / 10000000 : free_float * ta.vwap / 10000000
 validated_ff = na(ff) or nz(ff) == 0 ? '' : str.tostring(math.round(ff)) + ' Cr'
 
+isIndex = str.contains(syminfo.description, "Index")
+series float TSOFQ = request.financial(syminfo.tickerid, "TOTAL_SHARES_OUTSTANDING", "FQ",ignore_invalid_symbol=true)
+series float TSOFY =request.financial(syminfo.tickerid, "TOTAL_SHARES_OUTSTANDING", "FY",ignore_invalid_symbol=true)
+MarketCap =isIndex?0: (na(TSOFQ)?TSOFY:TSOFQ) * close/10000000
 
-series float TSOFQ = request.financial(syminfo.tickerid, "TOTAL_SHARES_OUTSTANDING", "FQ")
-series float TSOFY = request.financial(syminfo.tickerid, "TOTAL_SHARES_OUTSTANDING", "FY")
-MarketCap = (na(TSOFQ)?TSOFY:TSOFQ) * close/10000000
 
-
-series float FSOFY =nz(request.financial(syminfo.tickerid, 'FLOAT_SHARES_OUTSTANDING', 'FY'))
-FreeFloat=FSOFY*ta.vwap/10000000
+series float FSOFY =nz(request.financial(syminfo.tickerid, 'FLOAT_SHARES_OUTSTANDING', 'FY',ignore_invalid_symbol=true))
+FreeFloat=isIndex?0: FSOFY*ta.vwap/10000000
 
 //// Table Generation
 show_dashboard = input(true, "Dashboard" )
@@ -135,15 +131,22 @@ GetAdrBGColor(x)=>x>=5?color.green:x>=3.5?color(na):(x>=2.5?color.orange:color.r
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
 
+method FormatValue(float value)=>
+    str.tostring(value,"0")
+
+method FormatPercentage(float value)=>
+    str.tostring(value,"0.00%")
+
 if barstate.islast and show_dashboard
     var dashboard= table.new("top_center",10,2)
 
+
     dashboard.Cells(rowId,colId,"MCAP",color.black)
-    dashboard.Cells(rowId+1,colId, str.tostring(MarketCap), color(na))
+    dashboard.Cells(rowId+1,colId, FormatValue(MarketCap), color(na))
     colId:=colId+1
     
     dashboard.Cells(rowId,colId,"FF",color.black)
-    dashboard.Cells(rowId+1,colId, str.tostring(FreeFloat), color(na))
+    dashboard.Cells(rowId+1,colId, FormatValue(FreeFloat), color(na))
     colId:=colId+1
 
     dashboard.Cells(rowId,colId,"EMA 10",color.black)
