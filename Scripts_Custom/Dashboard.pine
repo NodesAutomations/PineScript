@@ -7,6 +7,12 @@ method VerticleCell(table tbl, int colId,string cellTitle,string cellText,color 
     table.cell(tbl,colId,0,cellTitle,text_color = color.white,bgcolor = color.black)
     table.cell(tbl,colId,1,cellText,text_color = color.white,bgcolor = backgroundcolor)
 
+method GetBGColor(bool value) =>
+	switch value
+		true=>color.green
+		false=>color.red
+		=>color(na)
+
 //General variables
 [dailyOpen,dailyHigh,dailyLow,dailyClose] = request.security(syminfo.tickerid, "1D", [open,high,low,close])
 
@@ -24,6 +30,7 @@ float ema10 = request.security(syminfo.tickerid, "1D",ta.ema(close, 10))
 float ema21 = request.security(syminfo.tickerid, "1D",ta.ema(close, 21))
 float ema50 = request.security(syminfo.tickerid, "1D",ta.ema(close, 50))
 
+bool IsTrendingEMA=(ema10>ema21) and (ema21>ema50)
 float ema10_Percentate=ph.Percentage(dailyClose,ema10)
 float ema21_Percentate=ph.Percentage(dailyClose,ema21)
 float ema50_Percentate=ph.Percentage(dailyClose,ema50)
@@ -39,6 +46,9 @@ if barstate.islast and show_dashboard
     colId:=colId+1
 
     VerticleCell(dashboard,colId, "FF",ph.ToCrore(FreeFloat), ph.GetBGColor(ph.RatioCrore(FreeFloat),300,500,1000,10000,100000))
+    colId:=colId+1
+
+    VerticleCell(dashboard,colId,"EMA",IsTrendingEMA?"Pass":"Fail",GetBGColor(IsTrendingEMA))
     colId:=colId+1
 
     VerticleCell(dashboard,colId,"EMA 10",ph.ToPercentage(ema10_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
