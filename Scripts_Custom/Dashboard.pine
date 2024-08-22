@@ -1,79 +1,36 @@
 //@version=5
 indicator("Dashboard",overlay= true)
-import vkpunique/PineHelper/3 as helper
+import vkpunique/PineHelper/4 as helper
 
 //Replace this functions On next PineHelper Update 
-method IsStock(string symbolType=syminfo.type)=>
-    symbolType=="stock"
 
 //Market Cap Value
 series float TSOFQ = request.financial(syminfo.tickerid, "TOTAL_SHARES_OUTSTANDING", "FQ",ignore_invalid_symbol=true)
 series float TSOFY =request.financial(syminfo.tickerid, "TOTAL_SHARES_OUTSTANDING", "FY",ignore_invalid_symbol=true)
-MarketCap = IsStock()? (na(TSOFQ)?TSOFY:TSOFQ) * close:0
-
-method GetBGColor(float x,float lowEnd,float lowEdge,float perfect,float normal, float highEdge)=>
-    if x<lowEnd
-        color.red
-    else if x<lowEdge
-        color.orange
-    else if x<perfect
-        color.green
-    else if x<normal
-        color(na)
-    else if x<highEdge
-        color.orange
-    else
-        color.red
-
-method GetMCapBGColor(float value)=>
-    float x=value/10000000
-    if x<1000
-        color.red
-    else if x<10000
-        color.green
-    else if x<100000
-        color(na)
-    else if x<200000
-        color.orange
-    else
-        color.red
+MarketCap = helper.IsStock()? (na(TSOFQ)?TSOFY:TSOFQ) * close:0
 
 //Free Float Value
 series float FSOFY =nz(request.financial(syminfo.tickerid, 'FLOAT_SHARES_OUTSTANDING', 'FY',ignore_invalid_symbol=true))
-FreeFloat=IsStock()? FSOFY*ta.vwap:0
-
-method GetFFBGColor(float value)=>
-    float x=value/10000000
-    if x<300
-        color.red
-    else if x<1000
-        color.green
-    else if x<5000
-        color(na)
-    else if x<10000
-        color.orange
-    else
-        color.red
+FreeFloat=helper.IsStock()? FSOFY*ta.vwap:0
 
 //// Table Generation
 show_dashboard = input(true, "Dashboard" )
 
-var rowId=0
-var colId=0
-var textColor=color.white
+int rowId=0
+int colId=0
 
 method Cells(table tbl,int rowId, int colId,string cellText,color backgroundcolor)=>
-    table.cell(tbl,colId,rowId,cellText,text_color = textColor,bgcolor = backgroundcolor)
+    table.cell(tbl,colId,rowId,cellText,text_color = color.white,bgcolor = backgroundcolor)
 
 if barstate.islast and show_dashboard
     var dashboard= table.new("top_center",10,2)
  
     dashboard.Cells(rowId,colId,"MCAP",color.black)
-    dashboard.Cells(rowId+1,colId,helper.ToCrore(MarketCap), GetMCapBGColor(MarketCap))
+    dashboard.Cells(rowId+1,colId,helper.ToCrore(MarketCap), helper.GetBGColor(helper.RatioCrore(MarketCap),500,1000,10000,100000,200000))
     colId:=colId+1
     
     dashboard.Cells(rowId,colId,"FF",color.black)
-    dashboard.Cells(rowId+1,colId, helper.ToCrore(FreeFloat), color(na))
+    dashboard.Cells(rowId+1,colId, helper.ToCrore(FreeFloat), helper.GetBGColor(helper.RatioCrore(FreeFloat),300,500,1000,10000,100000))
     colId:=colId+1
 
     dashboard.Cells(rowId,colId,"Test",color.black)
