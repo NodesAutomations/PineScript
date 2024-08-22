@@ -9,14 +9,22 @@ GetSectorTrend(string sector)=>
 GetIndustryTrend(string industry)=>
 	var industryMap= map.new<string,int>()
     industryMap.put("Agricultural Commodities/Milling",1)
+    industryMap.put("Alternative Power Generation",1)
+    industryMap.put("Building Products",1)
+    industryMap.put("Chemicals: Agricultural",1)
+    industryMap.put("Chemicals: Specialty",1)
+    industryMap.put("Electronic Equipment/Instruments",1)
+    industryMap.put("Finance/Rental/Leasing",1)
+    industryMap.put("Financial Conglomerates",1)
+    industryMap.put("Hospital/Nursing Management",1)
     industryMap.put("Household/Personal Care",1)
-    industryMap.put("Information Technology Services",1)
     industryMap.put("Investment Banks/Brokers",1)
     industryMap.put("Medical/Nursing Services",1)
-    industryMap.put("Packaged Software",1)
     industryMap.put("Pharmaceuticals: Generic",1)
     industryMap.put("Pharmaceuticals: Major",1)
     industryMap.put("Pharmaceuticals: Other",1)
+    industryMap.put("Steel",1)
+    industryMap.put("Textiles",1)
 	industryMap.contains(industry)?industryMap.get(industry):0
 
 //Tolerance for Calculation Checks
