@@ -3,7 +3,7 @@
 
 //@version=5
 indicator("Calculator",overlay= true)
-import vkpunique/PineHelper/6 as ph
+import vkpunique/PineHelper/7 as ph
 
 //Replace this with phhelper
 method VerticleCell3(table tbl,int rowId, int colId,string cellTitle,string cellText,color backgroundcolor)=>
@@ -13,7 +13,7 @@ method VerticleCell3(table tbl,int rowId, int colId,string cellTitle,string cell
 
 //General variables
 [dayOpen,dayHigh,dayLow,dayClose] = request.security(syminfo.tickerid, "1D", [open,high,low,close])
-[PreDayOpen,PreDayHigh,PreDayLow,PreDayClose] = request.security(syminfo.tickerid, "1D", [open[1],high[1],low[1],close[1]])
+[preDayOpen,preDayHigh,preDayLow,preDayClose] = request.security(syminfo.tickerid, "1D", [open[1],high[1],low[1],close[1]])
 
 //Relative Volume
 today_vol = request.security(syminfo.tickerid, "D", volume)
@@ -26,13 +26,19 @@ GetRvolBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color
 dcr_Percentage=(dayClose-dayLow)/(dayHigh-dayLow)
 GetDcrBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color.red
 
+//Open Calculation
+open_Percentage=ph.Percentage(dayOpen,preDayClose)  
+
+//Gap Calculation
+gap_Percentage= ph.Percentage(dayLow,preDayClose)  
+
 //Stoploss
 slEnum = input.enum(ph.StopLoss.daylow, "Stoploss")
 GetSL(x)=>math.round_to_mintick(math.round(x*(1-0.002),2))
 
 float stoploss = switch slEnum
     ph.StopLoss.daylow=>GetSL(dayLow)
-    ph.StopLoss.preDayLow=>GetSL(PreDayLow)
+    ph.StopLoss.preDayLow=>GetSL(preDayLow)
 
 stoploss_Percentage= (close-stoploss)/stoploss
 GetStoplossBGColor(x)=>x>0.04?color.red: x>=0.025?color.orange:x>=0.01?color(na):color.green
@@ -44,17 +50,25 @@ int qty=math.round(positionSize/close)
 int rowId=0
 int colId=0
 if barstate.islast 
-    var dashboard= table.new("top_right",2,10)
+    var dashboard= table.new("top_right",2,20)
 
-    VerticleCell3( dashboard,rowId,colId,"RVol",str.tostring(rvol_Percentate,"0.00%"),GetRvolBGColor(rvol_Percentate))
+    VerticleCell3( dashboard,rowId,colId,"RVol",ph.ToPercentage(rvol_Percentate),GetRvolBGColor(rvol_Percentate))
     colId:=colId+1
 
-    VerticleCell3( dashboard,rowId,colId,"DCR",str.tostring(dcr_Percentage,"0.00%"), GetDcrBGColor(dcr_Percentage))
+    VerticleCell3( dashboard,rowId,colId,"DCR",ph.ToPercentage(dcr_Percentage), GetDcrBGColor(dcr_Percentage))
     colId:=colId+1
 
     rowId:=rowId+3
     colId:=0
-    VerticleCell3(dashboard,rowId,colId,"SL%",str.tostring(stoploss_Percentage,"0.00%"),GetStoplossBGColor(stoploss_Percentage))
+    VerticleCell3(dashboard,rowId,colId,"Open",ph.ToPercentage(open_Percentage),ph.GetBGColorUp(open_Percentage,-0.01,0,0.01))
+    colId:=colId+1
+
+    VerticleCell3(dashboard,rowId,colId,"Gap",ph.ToPercentage(gap_Percentage),ph.GetBGColorUp(gap_Percentage,-0.01,0,0.01))
+    colId:=colId+1
+
+    rowId:=rowId+3
+    colId:=0
+    VerticleCell3(dashboard,rowId,colId,"SL%",ph.ToPercentage(stoploss_Percentage),GetStoplossBGColor(stoploss_Percentage))
     colId:=colId+1
 
     VerticleCell3(dashboard,rowId,colId,"SL AT",str.tostring(slEnum),color(na))
@@ -62,8 +76,8 @@ if barstate.islast
 
     rowId:=rowId+3
     colId:=0
-    VerticleCell3(dashboard,rowId,colId,"SL",str.tostring(stoploss),color(na))
+    VerticleCell3(dashboard,rowId,colId,"SL",ph.ToOneDecimal(stoploss),color(na))
     colId:=colId+1
 
-    VerticleCell3(dashboard,rowId,colId,"QTY",str.tostring(qty),color(na))
+    VerticleCell3(dashboard,rowId,colId,"QTY",ph.ToNoDecimal(qty),color(na))
     colId:=colId+1
