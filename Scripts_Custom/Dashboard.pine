@@ -8,30 +8,29 @@ var holdingMap= map.new<string,ph.Trade>()
 holdingMap.put("LIKHITHA",ph.Trade.new(482.81,"20240712"))
 holdingMap.put("JINDALSAW",ph.Trade.new(663.65,"20240822"))
 
-//Sector and Industry Trend
-GetSectorTrend(string sector)=>
-	var sectorMap= map.new<string,int>()
-	sectorMap.contains(sector)?sectorMap.get(sector):0
-
+//Industry Trend
 GetIndustryTrend(string industry)=>
 	var industryMap= map.new<string,int>()
     industryMap.put("Agricultural Commodities/Milling",1)
     industryMap.put("Alternative Power Generation",1)
+    industryMap.put("Apparel/Footwear",1)
+    industryMap.put("Auto Parts: OEM",1)
     industryMap.put("Building Products",1)
     industryMap.put("Chemicals: Agricultural",1)
     industryMap.put("Chemicals: Specialty",1)
     industryMap.put("Electronic Equipment/Instruments",1)
+    industryMap.put("Electronic Production Equipment",1)
     industryMap.put("Finance/Rental/Leasing",1)
     industryMap.put("Financial Conglomerates",1)
     industryMap.put("Hospital/Nursing Management",1)
     industryMap.put("Household/Personal Care",1)
+    industryMap.put("Industrial Specialties",1)
     industryMap.put("Investment Banks/Brokers",1)
     industryMap.put("Medical/Nursing Services",1)
-    industryMap.put("Pharmaceuticals: Generic",1)
-    industryMap.put("Pharmaceuticals: Major",1)
-    industryMap.put("Pharmaceuticals: Other",1)
+    industryMap.put("Motor Vehicles",1)
     industryMap.put("Steel",1)
     industryMap.put("Textiles",1)
+    industryMap.put("Trucks/Construction/Farm Machinery",1)
 	industryMap.contains(industry)?industryMap.get(industry):0
 
 //General variables
@@ -117,9 +116,6 @@ if barstate.islast
     colId:=colId+1
 
     ph.VerticleCell(dashboard,colId,"ADR",ph.ToPercentage(adr_Percentage),ph.GetBGColorUp(adr_Percentage,0,0.025,0.05))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"Sector",syminfo.sector,ph.GetBGColor3(GetSectorTrend(syminfo.sector) ))
     colId:=colId+1
 
     ph.VerticleCell(dashboard,colId,"Industry",syminfo.industry,ph.GetBGColor3(GetIndustryTrend(syminfo.industry)))
