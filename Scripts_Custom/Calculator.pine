@@ -2,6 +2,10 @@
 indicator("Calculator",overlay= true)
 import vkpunique/PineHelper/8 as ph
 
+// Replace on next pinehelper update
+method ToThousand(float value)=>
+    value==0?"-":str.tostring(value/1000,"0")+" K"
+
 //General variables
 [dayOpen,dayHigh,dayLow,dayClose] = request.security(syminfo.tickerid, "1D", [open,high,low,close])
 [preDayOpen,preDayHigh,preDayLow,preDayClose] = request.security(syminfo.tickerid, "1D", [open[1],high[1],low[1],close[1]])
@@ -72,7 +76,7 @@ if barstate.islast
     ph.HorizontalCellBlank(dashboard,rowId)
     rowId:=rowId+1
 
-    ph.HorizontalCell(dashboard,rowId,"Pos",ph.ToNoDecimal(positionSize),color(na))
+    ph.HorizontalCell(dashboard,rowId,"Pos",ToThousand(positionSize),color(na))
     rowId:=rowId+1
 
     ph.HorizontalCell(dashboard,rowId,"QTY",ph.ToNoDecimal(qty),color(na))
