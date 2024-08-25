@@ -29,6 +29,9 @@ export method ToTwoDecimal(float value)=>
 export method ToPercentage(float value)=>
     str.tostring(value,"0.00%")
 
+export method ToThousand(float value)=>
+    value==0?"-":str.tostring(value/1000,"0")+" K"
+
 export method ToCrore(float value)=>
     value==0?"-":str.tostring(value/10000000,"0")+" Cr"
 
