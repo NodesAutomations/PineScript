@@ -98,9 +98,22 @@ export method GetEMA(int length)=>
 	ta.ema(close,length)
 
 //Table Util
+
+export method HorizontalCell(table tbl, int rowId,string cellTitle,string cellText,color backgroundcolor)=>
+    table.cell(tbl,0,rowId,cellTitle,text_color = color.white,bgcolor = color.black)
+    table.cell(tbl,1,rowId,cellText,text_color = color.white,bgcolor = backgroundcolor)
+
+export method HorizontalCellBlank(table tbl, int rowId)=>
+    table.cell(tbl,0,rowId,"",text_color = color.white,bgcolor = color(na))
+    table.cell(tbl,1,rowId,"",text_color = color.white,bgcolor = color(na))
+
 export method VerticleCell(table tbl, int colId,string cellTitle,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,0,cellTitle,text_color = color.white,bgcolor = color.black)
     table.cell(tbl,colId,1,cellText,text_color = color.white,bgcolor = backgroundcolor)
+
+export method VerticleCellBlank(table tbl, int colId)=>
+    table.cell(tbl,colId,0,"",text_color = color.white,bgcolor = color(na))
+    table.cell(tbl,colId,1,"",text_color = color.white,bgcolor = color(na))
 
 export method VerticleCell2(table tbl,int rowId, int colId,string cellTitle,string cellText,color backgroundcolor)=>
     table.cell(tbl,colId,rowId,cellTitle,text_color = color.white,bgcolor = color.black)
