@@ -69,6 +69,16 @@ export method GetBGColorUp(float x,float badValue,float okValue,float normalValu
     else
         color.green
 
+export method GetBGColorDown(float x,float badValue,float okValue,float normalValue)=>
+    if x>badValue
+        color.red
+    else if x>okValue
+        color.orange    
+	else if x>normalValue
+        color(na)
+    else
+        color.green
+
 export method GetBGColor(float x,float lowEnd,float lowEdge,float perfect,float normal, float highEdge)=>
     if x<lowEnd
         color.red
