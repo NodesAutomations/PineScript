@@ -1,10 +1,23 @@
-// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
-// © vkpunique
-
 //@version=5
-
-// @description TODO: add library description here
 library("PineHelper", overlay=true)
+
+//Custom Types
+export type Trade
+    float BuyPrice
+    string OrderDate
+
+export enum StopLoss
+    daylow ="DayLow"
+    preDayLow  = "Pre DayLow"
+
+export type Result
+    string Name=""
+    string Value=""
+    color Color=na
+
+export enum TableOrientation
+    Horizontal
+    Verticle
 
 //// Commanly Used fuctions for active Script™
 
@@ -137,14 +150,22 @@ export method VerticleCell3(table tbl,int rowId, int colId,string cellTitle,stri
     table.cell(tbl,colId,rowId+1,cellText,text_color = color.white,bgcolor = backgroundcolor)
     table.cell(tbl,colId,rowId+2,"",text_color = color.white,bgcolor = color(na))
 
-//Custom Types
-export type Trade
-    float BuyPrice
-    string OrderDate
 
-export enum StopLoss
-    daylow ="DayLow"
-    preDayLow  = "Pre DayLow"
+export method GenerateTable(Result[] data,string position, TableOrientation orientation)=>
+    Result firstItem= data.first()
+    int numRows=orientation==TableOrientation.Verticle?data.size():2
+    int numCols=orientation==TableOrientation.Verticle?2:data.size()
+    var dashboard= table.new(position,numCols,numRows)
+    for i = 0 to  data.size() - 1
+        Result item= data.get(i)
+        if orientation==TableOrientation.Verticle
+            table.cell(dashboard,0,i,item.Name,text_color = color.white,bgcolor = item.Name==""?na:color.black)
+            table.cell(dashboard,1,i,item.Value,text_color = color.white,bgcolor = item.Color)
+        else
+            table.cell(dashboard,i,0,item.Name,text_color = color.white,bgcolor = item.Name==""?na:color.black)
+            table.cell(dashboard,i,1,item.Value,text_color = color.white,bgcolor = item.Color)
+    dashboard
+
 
 export method IsFNOStock(string symbol)=>
     var fnoMap= map.new<string,int>()
