@@ -21,21 +21,18 @@ GetRvolBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color
 dcr_Percentage=(dayClose-dayLow)/(dayHigh-dayLow)
 GetDcrBGColor(x)=>x>=0.8?color.green:x>=0.5?color(na):x>=0.3?color.orange:color.red
 
-//Open Calculation
+//Candle Stats
 open_Percentage=ph.Percentage(dayOpen,preDayClose)  
-
-//Gap Calculation
 gap_Percentage= ph.Percentage(dayLow,preDayClose)  
+candleHigh_Percentage= ph.Percentage(close,dayHigh)
+candleLow_Percentage= ph.Percentage(close,dayLow)
 
 //Stoploss
-slEnum = input.enum(ph.StopLoss.daylow, "Stoploss")
 GetSL(x)=>math.round_to_mintick(math.round(x*(1-0.002),2))
-
-float stoploss = switch slEnum
-    ph.StopLoss.daylow=>GetSL(dayLow)
-    ph.StopLoss.preDayLow=>GetSL(preDayLow)
-
+float stoploss = GetSL(dayLow)
 stoploss_Percentage= (close-stoploss)/stoploss
+float preDayStoploss = GetSL(preDayLow)
+preDay_stoploss_Percentage= (close-preDayStoploss)/preDayStoploss
 GetStoplossBGColor(x)=>x>0.04?color.red: x>=0.025?color.orange:x>=0.01?color(na):color.green
 
 //Quantity
@@ -61,16 +58,34 @@ if barstate.islast
     ph.HorizontalCell(dashboard,rowId,"Gap",ph.ToPercentage(gap_Percentage),ph.GetBGColorUp(gap_Percentage,-0.01,0,0.01))
     rowId:=rowId+1
 
+    ph.HorizontalCell(dashboard,rowId,"High",ph.ToPercentage(candleHigh_Percentage),color(na))
+    rowId:=rowId+1
+
+    ph.HorizontalCell(dashboard,rowId,"Low",ph.ToPercentage(candleLow_Percentage),color(na))
+    rowId:=rowId+1
+
     ph.HorizontalCellBlank(dashboard,rowId)
     rowId:=rowId+1
 
-    ph.HorizontalCell(dashboard,rowId,"SL AT",str.tostring(slEnum),color(na))
+    ph.HorizontalCell(dashboard,rowId,"SL AT","DayLow",color(na))
     rowId:=rowId+1
 
     ph.HorizontalCell(dashboard,rowId,"SL%",ph.ToPercentage(stoploss_Percentage),GetStoplossBGColor(stoploss_Percentage))
     rowId:=rowId+1
 
     ph.HorizontalCell(dashboard,rowId,"SL",ph.ToOneDecimal(stoploss),color(na))
+    rowId:=rowId+1
+
+    ph.HorizontalCellBlank(dashboard,rowId)
+    rowId:=rowId+1
+
+    ph.HorizontalCell(dashboard,rowId,"SL AT","PreLow",color(na))
+    rowId:=rowId+1
+
+    ph.HorizontalCell(dashboard,rowId,"SL%",ph.ToPercentage(preDay_stoploss_Percentage),GetStoplossBGColor(preDay_stoploss_Percentage))
+    rowId:=rowId+1
+
+    ph.HorizontalCell(dashboard,rowId,"SL",ph.ToOneDecimal(preDayStoploss),color(na))
     rowId:=rowId+1
 
     ph.HorizontalCellBlank(dashboard,rowId)
