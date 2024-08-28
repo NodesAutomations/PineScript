@@ -1,42 +1,38 @@
 //@version=5
 indicator("Dashboard",overlay= true)
-import vkpunique/PineHelper/9 as ph
+import vkpunique/PineHelper/11 as ph
 
 //Current Holding
 var holdingMap= map.new<string,ph.Trade>()
 holdingMap.put("LIKHITHA",ph.Trade.new(482.81,"20240712"))
 holdingMap.put("JINDALSAW",ph.Trade.new(663.65,"20240822"))
 holdingMap.put("PFS",ph.Trade.new(59.12,"20240827"))
+holdingMap.put("IREDA",ph.Trade.new(255.15,"20240827"))
 
 var triggerMap= map.new<string,float>()
 triggerMap.put("GODIGIT",378)
 triggerMap.put("AFIL",134)
-triggerMap.put("MOTILALOFS",706)
-triggerMap.put("GEOJITFSL",115)
-triggerMap.put("BLS",403)
-triggerMap.put("SUBROS",760)
-triggerMap.put("CAPLIPOINT",1780)
-triggerMap.put("PFS",59)
-triggerMap.put("BIKAJI",860)
-triggerMap.put("NSIL",4760)
+triggerMap.put("LIKHITHA",436)
+triggerMap.put("MANAPPURAM",221)
+triggerMap.put("INOXWIND",232)
 triggerMap.put("HEROMOTOCO",5450)
-triggerMap.put("INOXWIND",230)
-triggerMap.put("KPITTECH",1870)
-triggerMap.put("MANAPPURAM",218)
-triggerMap.put("WABAG",1380)
-triggerMap.put("GENESYS",739)
+triggerMap.put("VOLTAMP",14631)
+triggerMap.put("PNBHOUSING",900)
+triggerMap.put("KPITTECH",1900)
+triggerMap.put("RVNL",590)
+triggerMap.put("POKARNA",907)
 triggerMap.put("RKFORGE",973)
 triggerMap.put("SHARDAMOTR",2780)
-triggerMap.put("DLINKINDIA",638)
-triggerMap.put("IONEXCHANG",747)
+triggerMap.put("WABAG",1380)
 triggerMap.put("JYOTHYLAB",574)
-triggerMap.put("IREDA",266)
-triggerMap.put("METROBRAND",1402)
-triggerMap.put("KELLTONTEC",169)
-triggerMap.put("CARTRADE",931)
+triggerMap.put("DLINKINDIA",638)
+triggerMap.put("NSIL",4845)
 triggerMap.put("ROSSELLIND",612)
+triggerMap.put("CARTRADE",931)
+triggerMap.put("IONEXCHANG",747)
 triggerMap.put("MAYURUNIQ",675)
 triggerMap.put("TVSSRICHAK",5097)
+triggerMap.put("METROBRAND",1402)
 triggerMap.put("MAZDOCK",4640)
 
 //Industry Trend
@@ -129,54 +125,26 @@ startDate= timestamp(dyear, dmonth,dday, 0, 0)
 int NOD= ((currentDate-startDate)/(24 * 60 * 60 * 1000))+1
 
 //// Table Generation
-int colId=0
+var data= array.new<ph.Result>()
 if barstate.islast 
-    var dashboard= table.new("top_center",20,2)
- 
-    ph.VerticleCell(dashboard,colId,"MCAP",ph.ToCrore(MarketCap), ph.GetBGColor(ph.RatioCrore(MarketCap),500,1000,10000,100000,200000))
-    colId:=colId+1
+    ph.AddResult(data,"MCAP",ph.ToCrore(MarketCap), ph.GetBGColor(ph.RatioCrore(MarketCap),500,1000,10000,100000,200000))
+    ph.AddResult(data, "FF",ph.ToCrore(FreeFloat), ph.GetBGColor(ph.RatioCrore(FreeFloat),300,500,1000,10000,100000))
+    ph.AddResult(data)
 
-    ph.VerticleCell(dashboard,colId, "FF",ph.ToCrore(FreeFloat), ph.GetBGColor(ph.RatioCrore(FreeFloat),300,500,1000,10000,100000))
-    colId:=colId+1
+    ph.AddResult(data,"EMA",IsTrendingEMA?"Pass":"Fail",ph.GetBGColor(IsTrendingEMA))
+    ph.AddResult(data,"EMA 10",ph.ToPercentage(ema10_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
+    ph.AddResult(data,"EMA 21",ph.ToPercentage(ema21_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
+    ph.AddResult(data,"EMA 50",ph.ToPercentage(ema50_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
+    ph.AddResult(data,"ATH",ph.ToPercentage(ath_Percentage),ph.GetBGColor(ath_Percentage,-0.2,-0.15,-0.1,-0.01,-0.005))
+    ph.AddResult(data,"ADR",ph.ToPercentage(adr_Percentage),ph.GetBGColorUp(adr_Percentage,0,0.025,0.05))
+    ph.AddResult(data)
 
-    ph.VerticleCellBlank(dashboard,colId)
-    colId:=colId+1
+    ph.AddResult(data,"FNO",isFnoStock?"Yes":"No",ph.GetBGColor3(isFnoStock?-1:0))
+    ph.AddResult(data,"Industry",syminfo.industry,ph.GetBGColor3(GetIndustryTrend(syminfo.industry)))
+    ph.AddResult(data)
+    
+    ph.AddResult(data,"GTT",trigger>0?ph.ToPercentage(trigger_Percentage):"-",ph.GetBGColorDown(trigger_Percentage,0.02,0,-0.02))
+    ph.AddResult(data,"Gain",buyPrice>0?ph.ToPercentage(gain_Percentage):"-",ph.GetBGColorUp(gain_Percentage,-0.03,0,0.06))
+    ph.AddResult(data,"NOD",buyPrice>0?str.tostring(NOD):"-",color(na))
 
-    ph.VerticleCell(dashboard,colId,"EMA",IsTrendingEMA?"Pass":"Fail",ph.GetBGColor(IsTrendingEMA))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"EMA 10",ph.ToPercentage(ema10_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"EMA 21",ph.ToPercentage(ema21_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"EMA 50",ph.ToPercentage(ema50_Percentate),ph.GetBGColor(ema10_Percentate,-0.01,0,0.03,0.1,0.15))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"ATH",ph.ToPercentage(ath_Percentage),ph.GetBGColor(ath_Percentage,-0.2,-0.15,-0.1,-0.01,-0.005))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"ADR",ph.ToPercentage(adr_Percentage),ph.GetBGColorUp(adr_Percentage,0,0.025,0.05))
-    colId:=colId+1
-
-    ph.VerticleCellBlank(dashboard,colId)
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"FNO",isFnoStock?"Yes":"No",ph.GetBGColor3(isFnoStock?-1:0))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"Industry",syminfo.industry,ph.GetBGColor3(GetIndustryTrend(syminfo.industry)))
-    colId:=colId+1
-
-    ph.VerticleCellBlank(dashboard,colId)
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"GTT",trigger>0?ph.ToPercentage(trigger_Percentage):"-",ph.GetBGColorDown(trigger_Percentage,0.02,0,-0.02))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"Gain",buyPrice>0?ph.ToPercentage(gain_Percentage):"-",ph.GetBGColorUp(gain_Percentage,-0.03,0,0.06))
-    colId:=colId+1
-
-    ph.VerticleCell(dashboard,colId,"NOD",buyPrice>0?str.tostring(NOD):"-",color(na))
-    colId:=colId+1
+    ph.GenerateTable(data,"top_center",ph.TableOrientation.Horizontal)
