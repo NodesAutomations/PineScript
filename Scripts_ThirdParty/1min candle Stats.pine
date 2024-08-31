@@ -1,4 +1,3 @@
-//@version=5
 indicator("Test",overlay= true)
 
 newbar(res) => ta.change(time(res)) == 0 ? 0 : 1
@@ -13,30 +12,6 @@ USAOPENtimeOk2h = ( timeframe.period == "120" and timestamp(syminfo.timezone, ye
 USAOPENtimeOk1h = ( timeframe.period == "60" and timestamp(syminfo.timezone, year(time), month(time), dayofmonth(time), 9, 0) == time)
 USAOPENtimeOk = ( timestamp(syminfo.timezone, year(time), month(time), dayofmonth(time), 9, 15) == time)
 Timeok = USAOPENtimeOk or USAOPENtimeOk1h or USAOPENtimeOk2h or USAOPENtimeOk3h or USAOPENtimeOk4h or USAOPENtimeOk5h or USAOPENtimeOk6h or USAOPENtimeOk7h or USAOPENtimeOk8h or timeframe.period == "D"
-
-firststminClose = request.security_lower_tf(syminfo.tickerid, "1", close)
-
-Closevalue_d07 = timeframe.period == "D" and array.size(firststminClose)>990? array.get(firststminClose,990):na
-Closevalue_d18 = timeframe.period == "D" and array.size(firststminClose)>930? array.get(firststminClose,930):na
-Closevalue_480 = timeframe.period == "480" and array.size(firststminClose)>450? array.get(firststminClose,450):na
-Closevalue_420 = timeframe.period == "420" and array.size(firststminClose)>90? array.get(firststminClose,90):na
-Closevalue_360 = timeframe.period == "360" and array.size(firststminClose)>210? array.get(firststminClose,210):na
-Closevalue_300 = timeframe.period == "300" and array.size(firststminClose)>30? array.get(firststminClose,30):na
-Closevalue_240 = timeframe.period == "240" and array.size(firststminClose)>210? array.get(firststminClose,210):na
-Closevalue_180 = timeframe.period == "180" and array.size(firststminClose)>30? array.get(firststminClose,30):na
-Closevalue_120 = timeframe.period == "120" and array.size(firststminClose)>90? array.get(firststminClose,90):na
-Closevalue_60 = timeframe.period == "60" and array.size(firststminClose)>30? array.get(firststminClose,30):na
-Closevalue_0 = newbar (timeframe.period) and array.size(firststminClose) > 0 ? array.first(firststminClose): na
-
-Closevalue = timeframe.isintraday==false and (syminfo.type == "futures" or syminfo.type == "index" or syminfo.type == "forex" ) ?Closevalue_d18: timeframe.isintraday==false and (syminfo.type == "forex" or syminfo.type == "crypto" ) ?Closevalue_d07: USAOPENtimeOk8h ?Closevalue_480:USAOPENtimeOk7h?Closevalue_420:USAOPENtimeOk6h?Closevalue_360:USAOPENtimeOk5h?Closevalue_300:USAOPENtimeOk4h?Closevalue_240:USAOPENtimeOk3h?Closevalue_180:USAOPENtimeOk2h?Closevalue_120:USAOPENtimeOk1h?Closevalue_60:USAOPENtimeOk? Closevalue_0 :na
-var float fmc = na
-if Timeok
-    line.new(x1=time, y1=low, x2=time, y2=high, xloc=xloc.bar_time, extend=extend.both, color=#e6d969e6, style=line.style_dotted, width=1)
-amUSAOpenlabel = label.new(bar_index, Closevalue , text=str.tostring(Closevalue), tooltip = "1st min close: " +syminfo.type +" : " +str.tostring(( time(timeframe.period, "0000-0000:23456"))), size = size.tiny, color=#e6d969e6)
-
-fmc := Timeok ?Closevalue: fmc[1]
-PlotFirstMinuteClose = plot( fmc, style = plot.style_cross, color=#e6d969e6)
-
 
 firststminHigh = request.security_lower_tf(syminfo.tickerid, "1", high)
 
@@ -54,13 +29,7 @@ Highvalue_0 = newbar (timeframe.period) and array.size(firststminHigh) > 0 ? arr
 
 Highvalue = timeframe.isintraday==false and (syminfo.type == "futures" or syminfo.type == "index" or syminfo.type == "forex" ) ?Highvalue_d18: timeframe.isintraday==false and (syminfo.type == "forex" or syminfo.type == "crypto" ) ?Highvalue_d07: USAOPENtimeOk8h ?Highvalue_480:USAOPENtimeOk7h?Highvalue_420:USAOPENtimeOk6h?Highvalue_360:USAOPENtimeOk5h?Highvalue_300:USAOPENtimeOk4h?Highvalue_240:USAOPENtimeOk3h?Highvalue_180:USAOPENtimeOk2h?Highvalue_120:USAOPENtimeOk1h?Highvalue_60:USAOPENtimeOk? Highvalue_0 :na
 var float fmh = na
-if Timeok
-    line.new(x1=time, y1=low, x2=time, y2=high, xloc=xloc.bar_time, extend=extend.both, color=#e6d969e6, style=line.style_dotted, width=1)
-    amUSAOpenlabel = label.new(bar_index, high , text=str.tostring(Highvalue), tooltip = "1st min High: " +syminfo.type +" : " +str.tostring(( time(timeframe.period, "0000-0000:23456"))), size = size.tiny, color=#14b943e6)
-
 fmh := Timeok ?Highvalue: fmh[1]
-PlotFirstMinuteHigh = plot( fmh, style = plot.style_cross, color=#14b943e6)
-
 
 firststminLow = request.security_lower_tf(syminfo.tickerid, "1", low)
 
@@ -78,56 +47,14 @@ Lowvalue_0 = newbar (timeframe.period) and array.size(firststminLow) > 0 ? array
 
 Lowvalue = timeframe.isintraday==false and (syminfo.type == "futures" or syminfo.type == "index" or syminfo.type == "forex" ) ?Lowvalue_d18: timeframe.isintraday==false and (syminfo.type == "forex" or syminfo.type == "crypto" ) ?Lowvalue_d07: USAOPENtimeOk8h ?Lowvalue_480:USAOPENtimeOk7h?Lowvalue_420:USAOPENtimeOk6h?Lowvalue_360:USAOPENtimeOk5h?Lowvalue_300:USAOPENtimeOk4h?Lowvalue_240:USAOPENtimeOk3h?Lowvalue_180:USAOPENtimeOk2h?Lowvalue_120:USAOPENtimeOk1h?Lowvalue_60:USAOPENtimeOk? Lowvalue_0 :na
 var float fml = na
-if Timeok
-    line.new(x1=time, y1=low, x2=time, y2=high, xloc=xloc.bar_time, extend=extend.both, color=#e6d969e6, style=line.style_dotted, width=1)
-    amUSAOpenlabel = label.new(bar_index, low-(high-low) , text=str.tostring(Lowvalue), tooltip = "1st min Low: " +syminfo.type +" : " +str.tostring(( time(timeframe.period, "0000-0000:23456"))), size = size.tiny, color=#975252e6)
 
 fml := Timeok ?Lowvalue: fml[1]
-PlotFirstMinuteLow = plot( fml, style = plot.style_cross, color=#a70c0ce6)
-
-day = dayofmonth(timestamp("America/New_York", year(time), month(time), dayofmonth(time), 16, 0) )
-
-// Define the 4 pm closing timestamp
-closeTime = timestamp("America/New_York", year(time), month(time), dayofmonth(time)+1, 16, 0)
-
-// Define the next day's open timestamp
-openTime = timestamp("America/New_York", year(time), month(time), dayofmonth(time), 09, 30)
-
-// Draw lines for 4 pm close and 9:30 am open
-int linetimeExt = 86400000*dayofweek(time) // ... days
-var line lopen = na
-var line lclose = na
-var line lopenhigh = na
-var line lopenlow = na
-if Timeok
-    //var lineclose = line.new(x1=closeTime, y1=close, x2=closeTime, y2=close, xloc=xloc.bar_time, extend=extend.right, color=#e6d969e6, style=line.style_dotted, width=3)
-    lclose := line.new(time, close, openTime+ linetimeExt , close, xloc=xloc.bar_time, color=#69b4e6e6, style=line.style_dashed)
-    lopen := line.new(time, open, openTime+ linetimeExt , open, xloc=xloc.bar_time, color=#be69e6e6, style=line.style_dashed)
-    lopenhigh := line.new(time, high, openTime+ linetimeExt , high, xloc=xloc.bar_time, color=#6fe669e6, style=line.style_dashed)
-    lopenlow := line.new(time, low, openTime+ linetimeExt , low, xloc=xloc.bar_time, color=#e67181e6, style=line.style_dashed)
-
-
 
 var table myTable = table.new(position = position.top_right, columns = 2, rows = 7, bgcolor = color.yellow, border_width = 1)
 
 // Populate the table
-table.cell(myTable, 0, 0, "Current Open")
-table.cell(myTable, 1, 0, str.tostring(open))
+table.cell(myTable, 0, 0, "First High")
+table.cell(myTable, 1, 0, str.tostring(fmh))
 
-table.cell(myTable, 0, 1, "First Close")
-table.cell(myTable, 1, 1, str.tostring(fmc))
-
-table.cell(myTable, 0, 2, "First High")
-table.cell(myTable, 1, 2, str.tostring(fmh))
-
-table.cell(myTable, 0, 3, "First Low")
-table.cell(myTable, 1, 3, str.tostring(fml))
-
-
-table.cell(myTable, 0, 4, "Percent from High")
-table.cell(myTable, 1, 4, str.tostring((close-fmh)/fmh *100, format.percent))
-table.cell(myTable, 0, 5, "Percent from Low")
-table.cell(myTable, 1, 5, str.tostring((close-fml)/fml *100, format.percent))
-
-table.cell(myTable, 0, 6, "Percent from first Close")
-table.cell(myTable, 1, 6, str.tostring((close-fmc)/fmc *100, format.percent))
+table.cell(myTable, 0, 1, "First Low")
+table.cell(myTable, 1, 1, str.tostring(fml))
