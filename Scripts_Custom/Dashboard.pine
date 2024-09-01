@@ -1,70 +1,6 @@
 //@version=5
 indicator("Dashboard",overlay= true)
-import vkpunique/PineHelper/11 as ph
-
-//Current Holding
-var holdingMap= map.new<string,ph.Trade>()
-holdingMap.put("LIKHITHA",ph.Trade.new(482.81,"20240712"))
-holdingMap.put("JINDALSAW",ph.Trade.new(663.65,"20240822"))
-holdingMap.put("PFS",ph.Trade.new(59.12,"20240827"))
-holdingMap.put("IREDA",ph.Trade.new(255.15,"20240827"))
-
-var triggerMap= map.new<string,float>()
-triggerMap.put("GODIGIT",378)
-triggerMap.put("AFIL",134)
-triggerMap.put("LIKHITHA",436)
-triggerMap.put("MANAPPURAM",221)
-triggerMap.put("INOXWIND",232)
-triggerMap.put("HEROMOTOCO",5450)
-triggerMap.put("VOLTAMP",14631)
-triggerMap.put("PNBHOUSING",900)
-triggerMap.put("KPITTECH",1900)
-triggerMap.put("RVNL",590)
-triggerMap.put("POKARNA",907)
-triggerMap.put("RKFORGE",973)
-triggerMap.put("SHARDAMOTR",2780)
-triggerMap.put("WABAG",1380)
-triggerMap.put("JYOTHYLAB",574)
-triggerMap.put("DLINKINDIA",638)
-triggerMap.put("NSIL",4845)
-triggerMap.put("ROSSELLIND",612)
-triggerMap.put("CARTRADE",931)
-triggerMap.put("IONEXCHANG",747)
-triggerMap.put("MAYURUNIQ",675)
-triggerMap.put("TVSSRICHAK",5097)
-triggerMap.put("METROBRAND",1402)
-triggerMap.put("MAZDOCK",4640)
-
-//Industry Trend
-GetIndustryTrend(string industry)=>
-	var industryMap= map.new<string,int>()
-    industryMap.put("Agricultural Commodities/Milling",1)
-    industryMap.put("Alternative Power Generation",1)
-    industryMap.put("Apparel/Footwear",1)
-    industryMap.put("Auto Parts: OEM",1)
-    industryMap.put("Building Products",1)
-    industryMap.put("Chemicals: Agricultural",1)
-    industryMap.put("Chemicals: Specialty",1)
-    industryMap.put("Data Processing Services",1)
-    industryMap.put("Electronic Equipment/Instruments",1)
-    industryMap.put("Electronic Production Equipment",1)
-    industryMap.put("Finance/Rental/Leasing",1)
-    industryMap.put("Financial Conglomerates",1)
-    industryMap.put("Hospital/Nursing Management",1)
-    industryMap.put("Household/Personal Care",1)
-    industryMap.put("Industrial Specialties",1)
-    industryMap.put("Information Technology Services",1)
-    industryMap.put("Internet Software/Services",1)
-    industryMap.put("Investment Banks/Brokers",1)
-    industryMap.put("Industrial Machinery",1)
-    industryMap.put("Medical/Nursing Services",1)
-    industryMap.put("Motor Vehicles",1)
-    industryMap.put("Packaged Software",1)
-    industryMap.put("Steel",1)
-    industryMap.put("Textiles",1)
-    industryMap.put("Trucks/Construction/Farm Machinery",1)
-
-	industryMap.contains(industry)?industryMap.get(industry):0
+import vkpunique/PineHelper/14 as ph
 
 //General variables
 [dailyOpen,dailyHigh,dailyLow,dailyClose] = request.security(syminfo.tickerid, "1D", [open,high,low,close])
@@ -103,12 +39,9 @@ ath_Percentage=ph.Percentage(dailyClose,GetAllTimeHigh()[0])
 //// ADR Calculation
 adr_Percentage = (request.security(syminfo.tickerid, "1D",ta.sma(high/low, 20)) - 1)
 
-//Trigger Calculation
-float trigger=triggerMap.contains(syminfo.ticker)?triggerMap.get(syminfo.ticker):0
-trigger_Percentage=trigger>0? ph.Percentage(close,trigger):0
-GetTriggerBGColor(x)=>x>=0.02?color.red:x>=-0.02?color.green:color(na)
-
 // Gain 
+var holdingData = input.text_area(defval = "", title = "Holdings")
+var holdingMap= ph.GetMapDataTrade(holdingData)
 float buyPrice=holdingMap.contains(syminfo.ticker)?holdingMap.get(syminfo.ticker).BuyPrice:0
 float gain_Percentage=buyPrice>0?ph.Percentage(close,buyPrice) :0
 
@@ -123,6 +56,19 @@ dday = int( str.tonumber(str.substring(dateString, 6, 8)))
 
 startDate= timestamp(dyear, dmonth,dday, 0, 0)
 int NOD= ((currentDate-startDate)/(24 * 60 * 60 * 1000))+1
+
+//Trigger Calculation
+var triggerData = input.text_area(defval = "", title = "GTT")
+var triggerMap= ph.GetMapDataFloat(triggerData)
+float trigger=triggerMap.contains(syminfo.ticker)?triggerMap.get(syminfo.ticker):0
+trigger_Percentage=trigger>0? ph.Percentage(close,trigger):0
+GetTriggerBGColor(x)=>x>=0.02?color.red:x>=-0.02?color.green:color(na)
+
+//Industry Trend
+var industryData = input.text_area(defval = "", title = "Sector Trend")
+GetIndustryTrend(string industry)=>
+	var industryMap= ph.GetMapDataInt(industryData)
+	industryMap.contains(industry)?industryMap.get(industry):0
 
 //// Table Generation
 var data= array.new<ph.Result>()
@@ -143,8 +89,8 @@ if barstate.islast
     ph.AddResult(data,"Industry",syminfo.industry,ph.GetBGColor3(GetIndustryTrend(syminfo.industry)))
     ph.AddResult(data)
     
-    ph.AddResult(data,"GTT",trigger>0?ph.ToPercentage(trigger_Percentage):"-",ph.GetBGColorDown(trigger_Percentage,0.02,0,-0.02))
     ph.AddResult(data,"Gain",buyPrice>0?ph.ToPercentage(gain_Percentage):"-",ph.GetBGColorUp(gain_Percentage,-0.03,0,0.06))
     ph.AddResult(data,"NOD",buyPrice>0?str.tostring(NOD):"-",color(na))
+    ph.AddResult(data,"GTT",trigger>0?ph.ToPercentage(trigger_Percentage):"-",ph.GetBGColorDown(trigger_Percentage,0.02,0,-0.02))
 
     ph.GenerateTable(data,"top_center",ph.TableOrientation.Horizontal)
