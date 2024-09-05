@@ -31,6 +31,27 @@ preDay_stoploss_Percentage= ph.Percentage(close,preDayStoploss)
 int positionSize=input.int(400, "Position", minval=200, maxval=1000, step=1)*1000
 int qty=math.round(positionSize/close)
 
+//1m calculations
+newbar(res) => ta.change(time(res)) == 0 ? 0 : 1
+// Returns 1st min close at open RTH at 09:30 close of the current symbol.
+OPENtimeOk =  timestamp(syminfo.timezone, year(time), month(time), dayofmonth(time), 9, 15) == time
+Timeok = OPENtimeOk or timeframe.period == "D"
+
+//1 min High Calculations
+firststminHigh = request.security_lower_tf(syminfo.tickerid, "1", high)
+Highvalue_0 = newbar (timeframe.period) and array.size(firststminHigh) > 0 ? array.first(firststminHigh): na
+Highvalue = OPENtimeOk? Highvalue_0 :na
+var float fmh = na
+fmh := Timeok ?Highvalue: fmh[1]
+oneMinuteHigh=timeframe.isintraday?fmh[1]:Highvalue_0
+
+//1 min Low Calculations
+firststminLow = request.security_lower_tf(syminfo.tickerid, "1", low)
+Lowvalue_0 = newbar (timeframe.period) and array.size(firststminLow) > 0 ? array.first(firststminLow): na
+Lowvalue = OPENtimeOk? Lowvalue_0 :na
+var float fml = na
+fml := Timeok ?Lowvalue: fml[1]
+oneMinuteLow=timeframe.isintraday?fml[1]:Lowvalue_0
 if barstate.islast 
     ph.AddResult(data,"RVol",ph.ToPercentage(rvol_Percentate),rvol_Percentate>0?ph.GetBGColorUp(rvol_Percentate,0.15,0.3,0.5):na)
     ph.AddResult(data)
@@ -51,3 +72,11 @@ if barstate.islast
     ph.AddResult(data,"Pos",ph.ToThousand(positionSize),na)
     ph.AddResult(data,"QTY",ph.ToNoDecimal(qty),na)
     ph.GenerateTable(data,"top_right",ph.TableOrientation.Verticle)
+
+    var data2= array.new<ph.Result>()
+    
+    ph.AddResult(data2,"1mHigh",str.tostring(oneMinuteHigh),color(na))
+    ph.AddResult(data2,"1mHigh%",ph.ToPercentage(ph.Percentage(close,oneMinuteHigh)),color(na))
+    ph.AddResult(data2,"1mLow",str.tostring(oneMinuteLow),color(na))
+    ph.AddResult(data2,"1mLow%",ph.ToPercentage(ph.Percentage(close,oneMinuteLow)),color(na))
+    ph.GenerateTable(data2,"bottom_right",ph.TableOrientation.Verticle)
