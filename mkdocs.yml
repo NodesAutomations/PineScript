@@ -10,17 +10,17 @@ edit_uri: edit/main/docs/
 # Navigation Tree
 nav:
   - Home:
-  - index.md
-  - How it Work: How it work.md
-  - Data Types: Data Types.md
-  - Variables: Variables.md
-  - Inputs: Inputs.md
-  - Debugging: Debugging.md
-  - Chart Information: Chart Information.md
-  - My First Working Script: My First working Script.md
-  - PineSeed: PineSeed.md
-  - Resources: Resources.md
-  - Table: Table.md
+    - index.md
+    - How it work.md
+    - Data Types.md
+    - Variables.md
+    - Inputs.md
+    - Debugging.md
+    - Chart Information.md
+    - My First Working Script.md
+    - PineSeed.md
+    - Resources.md
+    - Table.md
 
 # Theme
 theme:
