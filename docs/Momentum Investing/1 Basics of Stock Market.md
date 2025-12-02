@@ -1,4 +1,4 @@
-# 1: Basics of Stock Markets
+# Basics of Stock Markets
 
 ![Untitled](../assets/MI1/Untitled.webp)
 
