@@ -2,6 +2,4 @@ title: Home
 nav:
   - Home: index.md
   - Code: Code
-  - Momentum Investing: 
-    - Momentum Investing/index.md
-    - "Momentum Investing/*"
+  - Momentum Investing: Momentum Investing
