@@ -6,54 +6,24 @@ site_url: https://nodesautomations.com/PineScript/
 repo_name: PineScript
 repo_url: https://github.com/NodesAutomations/PineScript
 edit_uri: edit/main/docs/
-
-# Navigation Tree
-nav:
-  - Home:
-    - index.md
-    - How it work.md
-    - Data Types.md
-    - Variables.md
-    - Inputs.md
-    - Debugging.md
-    - Chart Information.md
-    - My First Working Script.md
-    - PineSeed.md
-    - Resources.md
-    - Table.md
-  - Momentum Investing:
-    - Momentum Investing/index.md
-    - Momentum Investing/1 Basics of Stock Market.md
-    - Momentum Investing/2 Intro to Technical Analysis.md
-    - Momentum Investing/3 Trends and Stages.md
-    - Momentum Investing/4 Supply and Demand.md
-    - Momentum Investing/5 Buy Strategy.md
-    - Momentum Investing/8 Sell Strategy and Risk Management.md
-    - Momentum Investing/9 Psychology.md
-    - Momentum Investing/10 Portfolio Creation and Asset allocation.md
-    - Momentum Investing/11 Short Term Trading.md
-    - Momentum Investing/12 Mutual Funds.md
-    - Momentum Investing/13 IPO.md
-
-# Theme
+ 
 theme:
   name: material
   logo: assets/favicon.png
   favicon: assets/favicon.png
   palette:
-    # Palette toggle for dark mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+          icon: material/brightness-7
+          name: Switch to dark mode
     - scheme: slate
       primary: black
       accent: indigo
       toggle:
           icon: material/brightness-4
           name: Switch to light mode
-    - scheme: default
-      primary: black
-      accent: indigo
-      toggle:
-          icon: material/brightness-7
-          name: Switch to dark mode
   features:
     - content.action.edit # Allows "Edit on GitHub" links
     - content.action.view # Allows "View on GitHub" links
@@ -65,6 +35,10 @@ theme:
     repo: fontawesome/brands/git-alt 
     edit: material/pencil 
     view: material/eye
+
+plugins:
+  - search
+  - awesome-nav
 
 # Extensions
 markdown_extensions:
@@ -91,6 +65,7 @@ copyright: Copyright &copy; 2025 Nodes Automations
 
 # Footer social links
 extra:
+  generator: false # remove "Generated with MkDocs" footer
   social:
     - icon: fontawesome/solid/globe
       link: https://nodesautomations.com
@@ -100,5 +75,3 @@ extra:
       link: https://www.linkedin.com/in/vivekpatel-nodesautomations/
     - icon: fontawesome/brands/github
       link: https://github.com/orgs/NodesAutomations
-
-
