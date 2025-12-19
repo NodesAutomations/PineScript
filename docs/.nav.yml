@@ -3,4 +3,4 @@ nav:
   - Home: index.md
   - Momentum Investing: 
     - Momentum Investing/index.md
-    - "*"
+    - "Momentum Investing/*"
