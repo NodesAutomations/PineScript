@@ -1,10 +1,10 @@
 # Site settings
-site_name: PineScript
-site_url: https://nodesautomations.com/PineScript/
+site_name: Trade
+site_url: https://nodesautomations.com/Trade/
 
 # Repository Details for "Edit on GitHub" links
-repo_name: PineScript
-repo_url: https://github.com/NodesAutomations/PineScript
+repo_name: Trade
+repo_url: https://github.com/NodesAutomations/Trade
 edit_uri: edit/main/docs/
  
 theme:
